@@ -250,25 +250,40 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   }
   function cells(tr, vals){ vals.forEach(function(v){ var td=el('td',v[1]||null); if(v[0] instanceof Node) td.appendChild(v[0]); else td.textContent=v[0]; tr.appendChild(td); }); }
 
-  var AREA_COLS=function(){ var u=S.tm==='n'?'Rev (฿)':'Qty'; return [['area','Area','l','s'],['t18','iPhone 18 Series · Target'],['v18','iPhone 18 Series · ยอด '+u],['a18','%ACH'],['tn','N- · Target'],['vn','N- · ยอด '+u],['an','%ACH'],['tt','รวม · Target'],['vt','รวม · ยอด '+u],['at','%ACH'],['sold','สาขาที่ขาย'],['all','สาขาทั้งหมด']]; };
+  var AREA_COLS=function(){
+    var u=S.tm==='n'?'Rev (฿)':'Qty';
+    if(!S.model) return [['area','Area','l','s'],['t18','iPhone 18 Series · Target'],['v18','iPhone 18 Series · ยอด '+u],['a18','%ACH'],['tn','N- · Target'],['vn','N- · ยอด '+u],['an','%ACH'],['tt','รวม · Target'],['vt','รวม · ยอด '+u],['at','%ACH'],['sold','สาขาที่ขาย'],['all','สาขาทั้งหมด']];
+    var lab=mLabel(S.model);
+    if(S.model===G18 || S.model===NM) return [['area','Area','l','s'],['tt',lab+' · Target'],['vt',lab+' · ยอด '+u],['at','%ACH'],['sold','สาขาที่ขาย'],['all','สาขาทั้งหมด']];
+    return [['area','Area','l','s'],['vt',lab+' · ยอด '+u],['oth',S.tm==='n'?'ยอด Qty':'ยอด Rev (฿)'],['sold','สาขาที่ขาย'],['all','สาขาทั้งหมด']];
+  };
   function areaData(){
-    var M=MET(), rows=cur.tBase;
+    var M=MET(), O=M==='n'?'q':'n', rows=cur.tBase;
     var tot={}; Object.keys(SH).forEach(function(s){ if(!S.type||SH[s].t===S.type) tot[SH[s].a]=(tot[SH[s].a]||0)+1; });
     return AREAS.filter(function(a){ return !S.area || a.area===S.area; }).map(function(a){
       var ar=rows.filter(function(r){ return SH[r.s].a===a.area; });
-      var s18=sum(ar.filter(function(r){ return TOP[r.m]; })), sn=sum(ar.filter(function(r){ return !TOP[r.m]; })), st=sum(ar);
-      var t18=tgt(a.area,G18), tn=tgt(a.area,NM), tt=(t18!=null&&tn!=null)?t18+tn:null;
-      return {area:a.area, t18:t18, v18:s18[M], a18:ach(s18[M],t18), tn:tn, vn:sn[M], an:ach(sn[M],tn), tt:tt, vt:st[M], at:ach(st[M],tt), sold:Object.keys(st.shops).length, all:tot[a.area]||0};
+      var s18=sum(ar.filter(function(r){ return TOP[r.m]; })), sn=sum(ar.filter(function(r){ return !TOP[r.m]; }));
+      var st=sum(S.model ? ar.filter(function(r){ return mOk(r.m); }) : ar);
+      var t18=tgt(a.area,G18), tn=tgt(a.area,NM);
+      var tt = !S.model ? ((t18!=null&&tn!=null)?t18+tn:null) : tgt(a.area,S.model);
+      return {area:a.area, t18:t18, v18:s18[M], a18:ach(s18[M],t18), tn:tn, vn:sn[M], an:ach(sn[M],tn), tt:tt, vt:st[M], at:ach(st[M],tt), oth:st[O], sold:Object.keys(st.shops).length, all:tot[a.area]||0};
     });
   }
+  function areaCells(r){
+    var C={area:[r.area],t18:[fmtT(r.t18)],v18:[fmt(r.v18)],a18:[pct(r.a18),achCls(r.a18)],tn:[fmtT(r.tn)],vn:[fmt(r.vn)],an:[pct(r.an),achCls(r.an)],tt:[fmtT(r.tt)],vt:[fmt(r.vt)],at:[pct(r.at),achCls(r.at)],oth:[fmt(r.oth)],sold:[fmt(r.sold)],all:[fmt(r.all)]};
+    return AREA_COLS().map(function(c){ return C[c[0]]; });
+  }
   function drawAreas(){
-    $('area-p').textContent = (S.tm==='n'?'Rev (฿) · ':'Qty (เครื่อง) · ')+'ยอดขายวันที่ 20–22 พ.ย. เทียบ Target แยก iPhone 18 Series และ iPhone N-'+(S.type?' · ไม่มี Target แยกตามประเภทสาขา':'');
+    var lab = S.model ? mLabel(S.model) : 'iPhone 18 Series และ iPhone N-';
+    var hasT = !S.model || S.model===G18 || S.model===NM;
+    $('area-p').textContent = (S.tm==='n'?'Rev (฿) · ':'Qty (เครื่อง) · ')+'ยอดขายวันที่ 20–22 พ.ย. · '+(hasT?'เทียบ Target ':'ไม่มี Target รายรุ่นนี้ · ')+lab+(S.type?' · ไม่มี Target แยกตามประเภทสาขา':'');
+    if(!AREA_COLS().some(function(c){ return c[0]===S.sortA[0]; })) S.sortA=['vt',-1];
     var t=$('t-area'), list=sortRows(areaData(), S.sortA); t.replaceChildren(header(t,AREA_COLS(),S.sortA,drawAreas));
-    var tb=el('tbody'); list.forEach(function(r){ var tr=el('tr'); cells(tr,[[r.area],[fmtT(r.t18)],[fmt(r.v18)],[pct(r.a18),achCls(r.a18)],[fmtT(r.tn)],[fmt(r.vn)],[pct(r.an),achCls(r.an)],[fmtT(r.tt)],[fmt(r.vt)],[pct(r.at),achCls(r.at)],[fmt(r.sold)],[fmt(r.all)]]); tb.appendChild(tr); }); t.appendChild(tb);
-    var s={v18:0,vn:0,vt:0,sold:0,all:0}; list.forEach(function(r){ s.v18+=r.v18; s.vn+=r.vn; s.vt+=r.vt; s.sold+=r.sold; s.all+=r.all; });
-    var t18=tgt(null,G18), tn=tgt(null,NM), tt=tgt(null,'');
-    var a18=ach(s.v18,t18), an=ach(s.vn,tn), at=ach(s.vt,tt);
-    var tf=el('tfoot'), tr=el('tr'); cells(tr,[['รวม'],[fmtT(t18)],[fmt(s.v18)],[pct(a18),achCls(a18)],[fmtT(tn)],[fmt(s.vn)],[pct(an),achCls(an)],[fmtT(tt)],[fmt(s.vt)],[pct(at),achCls(at)],[fmt(s.sold)],[fmt(s.all)]]); tf.appendChild(tr); t.appendChild(tf);
+    var tb=el('tbody'); list.forEach(function(r){ var tr=el('tr'); cells(tr,areaCells(r)); tb.appendChild(tr); }); t.appendChild(tb);
+    var f={area:'รวม',v18:0,vn:0,vt:0,oth:0,sold:0,all:0}; list.forEach(function(r){ f.v18+=r.v18; f.vn+=r.vn; f.vt+=r.vt; f.oth+=r.oth; f.sold+=r.sold; f.all+=r.all; });
+    f.t18=tgt(null,G18); f.tn=tgt(null,NM); f.tt=tgt(null,S.model);
+    f.a18=ach(f.v18,f.t18); f.an=ach(f.vn,f.tn); f.at=ach(f.vt,f.tt);
+    var tf=el('tfoot'), tr=el('tr'); cells(tr,areaCells(f)); tf.appendChild(tr); t.appendChild(tf);
   }
 
   var SHOP_COLS=[['name','สาขา','l','s'],['area','Area','l','s'],['type','ประเภท','l','s'],['q','ยอด QTY'],['n','ยอดขายสะสม (฿)'],['npu','Net/เครื่อง'],['last','ขายล่าสุด','','s']];
@@ -322,7 +337,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     var txt='﻿'+[head].concat(lines).map(function(r){ return r.map(esc).join(','); }).join('\n');
     var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv;charset=utf-8'})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500);
   }
-  $('csv-area').onclick=function(){ var u=S.tm==='n'?'Rev':'Qty'; csv('iphone_area_target_'+u+'_20-22.csv',['Area','iPhone 18 Series Target '+u,'iPhone 18 Series '+u,'iPhone 18 Series %ACH','N- Target '+u,'N- '+u,'N- %ACH','Total Target '+u,'Total '+u,'Total %ACH','Shops sold','Shops total'], sortRows(areaData(),S.sortA).map(function(r){ var p=function(v){ return v==null?'':Math.round(v*100)+'%'; }, n=function(v){ return v==null?'':v; }; return [r.area,n(r.t18),r.v18,p(r.a18),n(r.tn),r.vn,p(r.an),n(r.tt),r.vt,p(r.at),r.sold,r.all]; })); };
+  $('csv-area').onclick=function(){ var cols=AREA_COLS(), u=S.tm==='n'?'Rev':'Qty'; csv('iphone_area_'+(S.model?mLabel(S.model).replace(/ /g,'_')+'_':'')+u+'_20-22.csv', cols.map(function(c){ return c[1]; }), sortRows(areaData(),S.sortA).map(function(r){ return cols.map(function(c){ var v=r[c[0]]; if(v==null) return ''; if(c[1]==='%ACH') return Math.round(v*100)+'%'; return v; }); })); };
   $('csv-shop').onclick=function(){ csv('iphone_shop_'+S.from+'_'+S.to+'.csv',['Shop','Code','Area','Type','QTY','Net (THB)','Last sale'], sortRows(shopData(),S.sortS).map(function(r){ return [r.name,r.code,r.area,r.type,r.q,r.n,r.last]; })); };
 
   render();
