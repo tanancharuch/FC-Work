@@ -66,12 +66,27 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
 .good{color:#1a7f37}
 @media (prefers-color-scheme:dark){.good{color:#4ade80}}
 .tnote{color:var(--muted);font-size:12px;margin:8px 0 0}
+.tabs{display:flex;gap:6px;margin:12px 0 0;border-bottom:1px solid var(--line)}
+.tabs button{font:inherit;font-weight:600;border:0;background:none;color:var(--muted);padding:8px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--fg);border-bottom-color:var(--blue)}
+.bad{color:#c62828}
+@media (prefers-color-scheme:dark){.bad{color:#f87171}}
+.nb{margin-top:12px}
+.nsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin:8px 0 10px}
+.nsum .card{padding:10px 12px}.nsum b{font-size:20px}
+.nt th.grp{text-align:center;color:var(--fg);border-bottom:2px solid var(--line)}
+.nt th.g18,.nt td.g18{background:rgba(58,120,212,.06)}
+.nt td.l small{display:block;margin:0;color:var(--muted)}
+.nt tr.extra td{color:var(--muted)}
 .foot{color:var(--muted);font-size:12px;margin-top:16px;line-height:1.6}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div><h1>ติดตามยอด iPhone ศุกร์–อาทิตย์</h1><span class="sub" id="sub"></span></div>
+  <div class="tabs" id="tabs"><button data-t="main">ภาพรวม</button><button data-t="north">โฟกัสไอโฟน North</button></div>
+
+  <div id="tab-main">
 
   <div class="bar">
     <div class="row">
@@ -116,6 +131,13 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   <details class="foot"><summary>ที่มาของตัวเลข</summary>
     <p>ข้อมูลจาก TSM Daily Sale Report เฉพาะบริษัท Wire and Wireless (สาขา WW) · นับเฉพาะเครื่อง iPhone (H/S,IPH) บิลสถานะ Payment ไม่รวม Credit Note · วันที่และชั่วโมงตามเวลาออกบิล · ยอดขายสะสม = NET_AMOUNT (หลังส่วนลด) · ราคาเต็ม = PRICE × จำนวน · จับคู่สาขากับ Area และประเภทสาขาตามรายชื่อสาขา FRM ก.ย. 69 · "สาขาทั้งหมด" = สาขา WW ใน 15 Area ที่มีรายการขายใด ๆ ใน TSM ช่วงข้อมูลนี้ · ชื่อสีแปลจากรหัสสีในชื่อสินค้า · Target มาจากตาราง "ประมาณการ WK47 ราย Area" (ยอดจริง จ.–พฤ. + ศ.–อา. เพิ่ม 10% จากสัปดาห์ก่อน, TSM ถึง 19 พ.ย. 69) โดย iPhone N- ใช้ช่อง "iPhone อื่น" · ผลรวม 15 Area = 3,634 เครื่อง (ต้นฉบับแสดง 3,633 จากการปัดเศษ)</p>
   </details>
+  </div>
+
+  <div id="tab-north" hidden>
+    <div class="bar"><div class="row"><span class="lbl">ดูถึงวันที่</span><div class="seg" id="nday"></div><span class="lbl" id="n-note"></span></div></div>
+    <div id="north"></div>
+    <p class="foot" id="n-foot"></p>
+  </div>
 </div>
 
 <script id="data" type="application/json">__DATA__</script>
@@ -340,7 +362,62 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   $('csv-area').onclick=function(){ var cols=AREA_COLS(), u=S.tm==='n'?'Rev':'Qty'; csv('iphone_area_'+(S.model?mLabel(S.model).replace(/ /g,'_')+'_':'')+u+'_20-22.csv', cols.map(function(c){ return c[1]; }), sortRows(areaData(),S.sortA).map(function(r){ return cols.map(function(c){ var v=r[c[0]]; if(v==null) return ''; if(c[1]==='%ACH') return Math.round(v*100)+'%'; return v; }); })); };
   $('csv-shop').onclick=function(){ csv('iphone_shop_'+S.from+'_'+S.to+'.csv',['Shop','Code','Area','Type','QTY','Net (THB)','Last sale'], sortRows(shopData(),S.sortS).map(function(r){ return [r.name,r.code,r.area,r.type,r.q,r.n,r.last]; })); };
 
+  // ---------- Tab: โฟกัสไอโฟน North ----------
+  var NT = D.north;
+  var nDays = NT ? (function(){ var a=[], d=NT.from; while(d<=NT.to){ a.push(d); d=addDays(d,1); } return a; })() : [];
+  S.nd = nDays.length ? (D.last>=NT.to ? NT.to : (D.last<NT.from ? NT.from : D.last)) : null;
+  function drawNorth(){
+    if(!NT) return;
+    var seg=$('nday'); seg.replaceChildren();
+    nDays.forEach(function(d){ var b=el('button',d===S.nd?'on':null,TH_DOW[dow(d)]+' '+(+d.slice(8,10))+' พ.ย.'); b.onclick=function(){ S.nd=d; drawNorth(); }; seg.appendChild(b); });
+    var k = nDays.indexOf(S.nd)+1;
+    $('n-note').textContent = 'TG รายวัน = Target ของวันที่เลือก · TG สะสม = Target รายวัน × '+k+' วัน (20 พ.ย. ถึงวันที่เลือก) · หน่วย: เครื่อง'+(S.nd>D.last?' · วันนี้ยังไม่มีข้อมูลขาย':'');
+    var box=$('north'); box.replaceChildren();
+    NT.boards.forEach(function(bd){
+      var codes={}; bd.shops.forEach(function(x){ codes[x.c]=1; });
+      var rowsDay=R.filter(function(r){ return r.d===S.nd && SH[r.s] && SH[r.s].a===bd.area; });
+      var rowsCum=R.filter(function(r){ return r.d>=NT.from && r.d<=S.nd && SH[r.s] && SH[r.s].a===bd.area; });
+      var q=function(rows,shop,g){ return rows.reduce(function(s,r){ return s + ((r.s===shop && (g==='18'?TOP[r.m]:!TOP[r.m])) ? r.q : 0); },0); };
+      var list=bd.shops.map(function(x){ return {c:x.c, n:x.n, t18:x.t18, tn:x.tn, d18:q(rowsDay,x.c,'18'), dn:q(rowsDay,x.c,'N'), c18:q(rowsCum,x.c,'18'), cn:q(rowsCum,x.c,'N')}; });
+      var extra={}; rowsCum.forEach(function(r){ if(!codes[r.s]) extra[r.s]=1; });
+      var ex=Object.keys(extra).map(function(s){ return {c:s, n:SH[s].n, t18:null, tn:null, d18:q(rowsDay,s,'18'), dn:q(rowsDay,s,'N'), c18:q(rowsCum,s,'18'), cn:q(rowsCum,s,'N'), extra:true}; }).sort(function(a,b){ return (b.c18+b.cn)-(a.c18+a.cn); });
+      var tot={t18:0,tn:0,d18:0,dn:0,c18:0,cn:0}; list.concat(ex).forEach(function(r){ ['d18','dn','c18','cn'].forEach(function(f){ tot[f]+=r[f]; }); }); list.forEach(function(r){ tot.t18+=r.t18||0; tot.tn+=r.tn||0; });
+      var sec=el('div','sec nb'), hd=el('div','sec-h'), hx=el('div'); hx.appendChild(el('h2',null,'กระดาน'+bd.name+' · '+bd.area)); hx.appendChild(el('p',null,bd.shops.length+' สาขาที่มี Target'+(ex.length?' · อีก '+ex.length+' สาขาใน Area ที่มียอดแต่ไม่มี Target':''))); hd.appendChild(hx); sec.appendChild(hd);
+      var sm=el('div','nsum');
+      [['iPhone 18 Series · วันนี้',tot.d18,tot.t18],['iPhone 18 Series · สะสม',tot.c18,tot.t18*k],['iPhone N- · วันนี้',tot.dn,tot.tn],['iPhone N- · สะสม',tot.cn,tot.tn*k]].forEach(function(x){ var a=ach(x[1],x[2]), c=el('div','card'); c.appendChild(el('div','k-l',x[0])); var v=el('div'); v.appendChild(el('b',achCls(a),pct(a))); v.appendChild(document.createTextNode('  '+fmt(x[1])+' / '+fmt(x[2])+' เครื่อง')); c.appendChild(v); sm.appendChild(c); });
+      sec.appendChild(sm);
+      var tw=el('div','tw'), tb=el('table','nt'), th=el('thead'), r1=el('tr'), r2=el('tr');
+      var h=function(row,txt,cls,span,rs){ var c=el('th',cls||null,txt); if(span) c.colSpan=span; if(rs) c.rowSpan=rs; row.appendChild(c); };
+      h(r1,'สาขา','l',null,2); h(r1,'iPhone 18 Series','grp g18',6); h(r1,'iPhone N-','grp',6);
+      ['TG วัน','ขาย','%','TG สะสม','ขายสะสม','%'].forEach(function(x){ h(r2,x,'g18'); }); ['TG วัน','ขาย','%','TG สะสม','ขายสะสม','%'].forEach(function(x){ h(r2,x); });
+      th.appendChild(r1); th.appendChild(r2); tb.appendChild(th);
+      var body=el('tbody');
+      var line=function(r, cls){
+        var tr=el('tr',cls||null), nm=el('td','l'); nm.appendChild(document.createTextNode(r.n)); nm.appendChild(el('small',null,r.c+(r.extra?' · ไม่มี Target':''))); tr.appendChild(nm);
+        [['t18','d18','c18','g18'],['tn','dn','cn','']].forEach(function(g){
+          var td=r[g[0]], tc=td==null?null:td*k, ad=ach(r[g[1]],td), ac=ach(r[g[2]],tc), base=g[3];
+          var cell=function(v,c){ var x=el('td',(base+' '+(c||'')).trim()||null,v); tr.appendChild(x); };
+          cell(fmtT(td)); cell(fmt(r[g[1]]), (td&&!r[g[1]]&&S.nd<=D.last)?'bad':''); cell(pct(ad),achCls(ad)); cell(fmtT(tc)); cell(fmt(r[g[2]]), (tc&&!r[g[2]])?'bad':''); cell(pct(ac),achCls(ac));
+        });
+        body.appendChild(tr);
+      };
+      list.forEach(function(r){ line(r); }); ex.forEach(function(r){ line(r,'extra'); });
+      tb.appendChild(body);
+      var tf=el('tfoot'); var tr=el('tr'), nm=el('td','l','รวม'+bd.name); tr.appendChild(nm);
+      [['t18','d18','c18','g18'],['tn','dn','cn','']].forEach(function(g){ var td=tot[g[0]], tc=td*k, ad=ach(tot[g[1]],td), ac=ach(tot[g[2]],tc); [[fmt(td)],[fmt(tot[g[1]])],[pct(ad),achCls(ad)],[fmt(tc)],[fmt(tot[g[2]])],[pct(ac),achCls(ac)]].forEach(function(v){ tr.appendChild(el('td',(g[3]+' '+(v[1]||'')).trim()||null,v[0])); }); });
+      tf.appendChild(tr); tb.appendChild(tf); tw.appendChild(tb); sec.appendChild(tw); box.appendChild(sec);
+    });
+    $('n-foot').textContent = 'ที่มา: '+NT.label+' · ยอดขายจาก TSM (สาขา WW, iPhone บิล Payment) ถึง '+D.updated+' · iPhone 18 Series = 18 Pro Max + 18 Pro + Duo · iPhone N- = รุ่นอื่นทั้งหมด · ตัวเลขสีแดง = มี Target แต่ยังไม่มียอด · ช่อง "—" = ไม่มี Target ในรูป · "สาขาที่ไม่มี Target" คือสาขาใน Area เดียวกันที่มียอดขาย นับรวมในยอดรวมของกระดานด้วย';
+  }
+  function showTab(tb){
+    S.tab = tb==='north' && NT ? 'north' : 'main';
+    [].forEach.call($('tabs').children, function(b){ b.className = b.dataset.t===S.tab ? 'on' : ''; b.onclick=function(){ showTab(b.dataset.t); try{ history.replaceState(null,'',b.dataset.t==='north'?'#north':location.pathname); }catch(e){} }; });
+    $('tab-main').hidden = S.tab!=='main'; $('tab-north').hidden = S.tab!=='north';
+    if(S.tab==='north') drawNorth();
+  }
+
   render();
+  showTab(location.hash==='#north' ? 'north' : 'main');
 })();
 </script>
 </body>

@@ -1,0 +1,187 @@
+{
+ "label": "Target รายวันต่อสาขา (Qty) ตามรูปที่ส่งมา 20 พ.ย. · ใช้ทุกวัน ศ.–อา. 20–22 พ.ย.",
+ "from": "2026-11-20",
+ "to": "2026-11-22",
+ "boards": [
+  {
+   "name": "เหนือบน",
+   "area": "UPC - Upper North",
+   "shops": [
+    {
+     "c": "80101067",
+     "n": "Central Airport Plaza Chiangmai",
+     "t18": 9,
+     "tn": 2
+    },
+    {
+     "c": "80100621",
+     "n": "Central Chiangrai",
+     "t18": 9,
+     "tn": 2
+    },
+    {
+     "c": "80101117",
+     "n": "Central Lampang",
+     "t18": 5,
+     "tn": 1
+    },
+    {
+     "c": "80100486",
+     "n": "Central Festival Chiangmai",
+     "t18": 9,
+     "tn": 2
+    },
+    {
+     "c": "80101263",
+     "n": "Maya Chiangmai",
+     "t18": 4,
+     "tn": 1
+    },
+    {
+     "c": "80101281",
+     "n": "Big C Chiangmai",
+     "t18": 3,
+     "tn": 1
+    },
+    {
+     "c": "80100750",
+     "n": "Lotus's Fang Chiangmai",
+     "t18": 3,
+     "tn": 1
+    },
+    {
+     "c": "80101655",
+     "n": "Lotus's Fang Chiangmai (D)",
+     "t18": 1,
+     "tn": null
+    },
+    {
+     "c": "80100858",
+     "n": "Mini Mae Sai ChiangRai",
+     "t18": 1,
+     "tn": null
+    },
+    {
+     "c": "80100754",
+     "n": "Lotus's Ruamchok Chiangmai",
+     "t18": 2,
+     "tn": 1
+    },
+    {
+     "c": "80101670",
+     "n": "Lotus's Ruam Choke (D)",
+     "t18": 1,
+     "tn": null
+    },
+    {
+     "c": "80100804",
+     "n": "Lotus's Jomthong Chiangmai",
+     "t18": 2,
+     "tn": 1
+    },
+    {
+     "c": "80101013",
+     "n": "Mini Mueang Maehongson",
+     "t18": 1,
+     "tn": null
+    },
+    {
+     "c": "80101661",
+     "n": "Lotus's Chom Thong (D)",
+     "t18": 1,
+     "tn": null
+    },
+    {
+     "c": "80100849",
+     "n": "Mini Mueang Phayao",
+     "t18": 1,
+     "tn": null
+    },
+    {
+     "c": "80100792",
+     "n": "Lotus's Phayao",
+     "t18": 2,
+     "tn": 1
+    },
+    {
+     "c": "80100798",
+     "n": "Lotus's Chiangkham Phayao",
+     "t18": 1,
+     "tn": null
+    }
+   ]
+  },
+  {
+   "name": "เหนือล่าง",
+   "area": "UPC - Lower North",
+   "shops": [
+    {
+     "c": "80101198",
+     "n": "Central Phitsanulok",
+     "t18": 4,
+     "tn": 3
+    },
+    {
+     "c": "80101306",
+     "n": "Robinson Mae Sot",
+     "t18": 1,
+     "tn": 1
+    },
+    {
+     "c": "80101308",
+     "n": "Robinson Khamphaengphet",
+     "t18": 1,
+     "tn": 1
+    },
+    {
+     "c": "80100782",
+     "n": "Lotus's Thaluang Phichit",
+     "t18": 1,
+     "tn": 1
+    },
+    {
+     "c": "80100854",
+     "n": "Mini Lomsak Phetchabun",
+     "t18": 1,
+     "tn": 1
+    },
+    {
+     "c": "80101659",
+     "n": "Robinson Mae Sot (D)",
+     "t18": null,
+     "tn": null
+    },
+    {
+     "c": "80101704",
+     "n": "Central Plaza Phitsanulok (D)",
+     "t18": 2,
+     "tn": 2
+    },
+    {
+     "c": "80100865",
+     "n": "Taphan Hin Phichit",
+     "t18": 1,
+     "tn": 1
+    },
+    {
+     "c": "80101658",
+     "n": "Lotus's Lomsak (D)",
+     "t18": 1,
+     "tn": 1
+    },
+    {
+     "c": "80101665",
+     "n": "Salokbat Kamphaengphet (D)",
+     "t18": null,
+     "tn": null
+    },
+    {
+     "c": "80101656",
+     "n": "Lotus's Pitsanulok (D)",
+     "t18": 1,
+     "tn": 1
+    }
+   ]
+  }
+ ]
+}
