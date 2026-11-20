@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ติดตามยอด iPhone ศุกร์–อาทิตย์ · WK47</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{--fg:#1f2328;--muted:#6b7280;--bg:#f7f7f5;--panel:#fff;--line:#e5e5e0;--ok:#1a7f37;--bad:#c62828;--bar:#c2410c;--track:#e7e5df;--hl:#faf8f3}
+@media (prefers-color-scheme:dark){:root{--fg:#ececec;--muted:#a1a1a1;--bg:#191918;--panel:#232322;--line:#383836;--ok:#4ade80;--bad:#f87171;--bar:#fb923c;--track:#3a3936;--hl:#2a2a28}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Sarabun","Noto Sans Thai","Leelawadee UI",Tahoma,system-ui,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 48px;display:flex;flex-direction:column;gap:28px}
+h1{font-size:28px;font-weight:600;margin:0}
+h2{font-size:18px;font-weight:600;margin:0 0 4px}
+.sub,.hsub{color:var(--muted);font-size:13px;margin:4px 0 0}
+.hsub{margin:0 0 10px}
+.lead{font-size:18px;margin:10px 0 0;max-width:60em}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.label{color:var(--muted);font-size:13px}
+.big{font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:4px}
+.note{font-size:13px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+.good{color:var(--ok)}.bad{color:var(--bad)}
+.scroll{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:12px;vertical-align:bottom}
+th:first-child,td:first-child,.l{text-align:left}
+tfoot td,tr.tot td{font-weight:600;background:var(--hl)}
+tbody tr:last-child td{border-bottom:none}
+.chart{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.chart svg text{fill:var(--muted);font-size:12px;font-family:inherit}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:8px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.15);border-radius:8px;padding:6px 10px;font-size:12px;line-height:1.5;white-space:nowrap;opacity:0;font-variant-numeric:tabular-nums}
+.foot{font-size:12px;color:var(--muted);line-height:1.6}
+.stamp{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ติดตามยอด iPhone ศุกร์–อาทิตย์ · WK47</h1>
+    <p class="sub">สัปดาห์ 16–22 พ.ย. 2569 · Retail WW 15 Area · หน่วย: เครื่อง</p>
+    <p class="lead" id="lead"></p>
+    <span class="stamp" id="stamp"></span>
+  </header>
+
+  <section class="tiles">
+    <div class="card"><div class="label">ประมาณการ WK47 (ทั้งสัปดาห์)</div><div class="big" id="t-fc"></div><div class="note">WK46 จริง <span id="t-wk46"></span> · <span id="t-vs"></span></div></div>
+    <div class="card"><div class="label">ยอดสะสมจริง WK47</div><div class="big" id="t-td"></div><div class="note"><span id="t-pct"></span> ของประมาณการ</div></div>
+    <div class="card"><div class="label">ยอดจริง ศ.–อา.</div><div class="big" id="t-we"></div><div class="note">เป้า ศ.–อา. <span id="t-wt"></span> · ทำได้ <span id="t-wp"></span></div></div>
+    <div class="card"><div class="label">ยังขาดถึงประมาณการ</div><div class="big" id="t-gap"></div><div class="note">รวมทุก Area ที่ยังไม่ถึงเป้า</div></div>
+  </section>
+
+  <section class="tiles">
+    <div class="card"><div class="label">ศุกร์ 20 พ.ย.</div><div class="big" id="d-fri"></div></div>
+    <div class="card"><div class="label">เสาร์ 21 พ.ย.</div><div class="big" id="d-sat"></div></div>
+    <div class="card"><div class="label">อาทิตย์ 22 พ.ย.</div><div class="big" id="d-sun"></div></div>
+  </section>
+
+  <section>
+    <h2>ยอดสะสมเทียบประมาณการ ราย Area</h2>
+    <p class="hsub">แถบเทาคือประมาณการ WK47 ทั้งสัปดาห์ แถบสีคือยอดจริงสะสม (จ.–อา.) · ชี้หรือแตะที่แถบเพื่อดูยอดรายวัน</p>
+    <div class="chart" id="chart">
+      <div class="legend"><span><span class="sw" style="background:var(--track)"></span>ประมาณการ WK47</span><span><span class="sw" style="background:var(--bar)"></span>ยอดจริงสะสม</span></div>
+      <svg id="svg" role="img" aria-label="ยอดจริงสะสมเทียบประมาณการ WK47 ราย Area" width="100%"></svg>
+      <div class="tip" id="tip"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>สรุปราย Region</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Region</th><th>ประมาณการ WK47</th><th>จ.–พฤ.</th><th>ศ. 20</th><th>ส. 21</th><th>อา. 22</th><th>สะสม</th><th>% ประมาณการ</th><th>เป้า ศ.–อา.</th><th>% เป้า ศ.–อา.</th></tr></thead>
+      <tbody id="region"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>รายละเอียดราย Area</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Area</th><th class="l">Region</th><th>ประมาณการ WK47</th><th>จ.–พฤ.</th><th>ศ. 20</th><th>ส. 21</th><th>อา. 22</th><th>สะสม</th><th>% ประมาณการ</th><th>เป้า ศ.–อา.</th><th>% เป้า ศ.–อา.</th><th>ยังขาด</th></tr></thead>
+      <tbody id="area"></tbody>
+      <tfoot id="areafoot"></tfoot>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>ยอดรายรุ่น ศ.–อา.</h2>
+    <p class="hsub">ประมาณการรายรุ่นเป็นยอดทั้งสัปดาห์ WK47 ตามตารางประมาณการ</p>
+    <div class="scroll"><table>
+      <thead><tr><th>รุ่น</th><th>ประมาณการ WK47</th><th>ศ. 20</th><th>ส. 21</th><th>อา. 22</th><th>รวม ศ.–อา.</th></tr></thead>
+      <tbody id="model"></tbody>
+    </table></div>
+  </section>
+
+  <details class="foot">
+    <summary>วิธีคิดตัวเลข</summary>
+    <p>ประมาณการ WK47 มาจากตาราง "ประมาณการ WK47 ราย Area" (ยอดจริง จ.–พฤ. + ศ.–อา. เพิ่ม 10% จากสัปดาห์ก่อน, ข้อมูล TSM ถึง 19 พ.ย. 69) ผลรวม 15 Area อาจต่างจากตารางต้นฉบับ 1 เครื่องจากการปัดเศษ</p>
+    <p>ยอดจริงมาจาก TSM Daily Sale Report: เฉพาะบริษัท Wire and Wireless, บิลสถานะ Payment (ไม่รวม Credit Note), รายการเครื่อง iPhone (H/S,IPH) นับตามวันที่ออกบิล จับคู่ร้านกับ Area ตามรายชื่อสาขา FRM ก.ย. 69</p>
+    <p>เป้า ศ.–อา. = ประมาณการ WK47 − ยอดจริง จ.–พฤ. · "ยังขาด" = ประมาณการ − ยอดสะสม (ไม่ติดลบ)</p>
+  </details>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function(){
+  var D = JSON.parse(document.getElementById('data').textContent);
+  var START='2026-11-16', FRI='2026-11-20', SAT='2026-11-21', SUN='2026-11-22';
+  var n = function(v){ return v==null||isNaN(v) ? '—' : Math.round(v).toLocaleString('en-US'); };
+  var p = function(v){ return v==null||isNaN(v) ? '—' : Math.round(v*100)+'%'; };
+  var s = function(v){ return v==null||isNaN(v) ? '—' : (v>0?'+':'')+(v*100).toFixed(1)+'%'; };
+  var $ = function(id){ return document.getElementById(id); };
+  var set = function(id, t){ $(id).textContent = t; };
+  var daily = D.daily, dates = {};
+  daily.forEach(function(r){ dates[r.date]=1; });
+  var hasMT = Object.keys(dates).some(function(d){ return d>=START && d<FRI; });
+  var hasData = daily.length>0;
+  var sum = function(rows, test){ return rows.filter(test).reduce(function(a,r){ return a+(+r.qty||0); },0); };
+
+  var areas = D.forecast.map(function(f){
+    var rows = daily.filter(function(r){ return r.area===f.area; });
+    var mt = sum(rows, function(r){ return r.date>=START && r.date<FRI; });
+    var day = function(d){ return dates[d] ? sum(rows, function(r){ return r.date===d; }) : null; };
+    var fri=day(FRI), sat=day(SAT), sun=day(SUN), fc=+f.iphone_wk47;
+    var we=(fri||0)+(sat||0)+(sun||0), td=hasData? mt+we : null, tg=hasMT? fc-mt : null;
+    return {region:f.region, area:f.area, forecast:fc, wk46:+f.iphone_wk46, mon_thu:hasMT?mt:null, fri:fri, sat:sat, sun:sun,
+      weekend:hasData?we:null, to_date:td, pct:td==null?null:td/fc, weekend_target:tg,
+      weekend_pct:(tg>0&&hasData)?we/tg:null, gap:td==null?null:Math.max(fc-td,0)};
+  });
+  var agg = function(list, name){
+    var o={region:name};
+    ['forecast','wk46','mon_thu','fri','sat','sun','weekend','to_date','weekend_target','gap'].forEach(function(k){
+      o[k] = list.some(function(r){ return r[k]!=null; }) ? list.reduce(function(a,r){ return a+(r[k]||0); },0) : null; });
+    o.pct = o.to_date==null?null:o.to_date/o.forecast;
+    o.weekend_pct = (o.weekend_target>0&&o.weekend!=null)?o.weekend/o.weekend_target:null;
+    return o;
+  };
+  var regions = []; areas.forEach(function(a){ if(regions.indexOf(a.region)<0) regions.push(a.region); });
+  var regRows = regions.map(function(r){ return agg(areas.filter(function(a){ return a.region===r; }), r); });
+  var T = agg(areas, 'รวม 15 Area');
+  T.vs = T.wk46 ? T.forecast/T.wk46-1 : null;
+  var last = Object.keys(dates).sort().pop();
+  var ranked = areas.filter(function(a){ return a.pct!=null; }).sort(function(a,b){ return b.pct-a.pct; });
+
+  // header
+  if(hasData){
+    var d = last ? (+last.slice(8,10))+' พ.ย.' : '—';
+    set('lead', 'ยอด iPhone สะสม WK47 ถึงวันที่ '+d+' อยู่ที่ '+n(T.to_date)+' เครื่อง คิดเป็น '+p(T.pct)+' ของประมาณการ '+n(T.forecast)+' เครื่อง · Area ที่ทำได้สูงสุดเทียบประมาณการคือ '+ranked[0].area+' ('+p(ranked[0].pct)+')');
+  } else {
+    set('lead', 'ยังไม่มียอดขายรายวันของ WK47 — แสดงประมาณการ '+n(T.forecast)+' เครื่อง (WK46 จริง '+n(T.wk46)+') เป็นเส้นเทียบ');
+  }
+  set('stamp', 'ข้อมูลล่าสุด: '+D.updated);
+  set('t-fc', n(T.forecast)); set('t-wk46', n(T.wk46)); set('t-vs', s(T.vs)); $('t-vs').className = T.vs>0?'good':(T.vs<0?'bad':'');
+  set('t-td', n(T.to_date)); set('t-pct', p(T.pct));
+  set('t-we', n(T.weekend)); set('t-wt', n(T.weekend_target)); set('t-wp', p(T.weekend_pct));
+  set('t-gap', n(T.gap)); set('d-fri', n(T.fri)); set('d-sat', n(T.sat)); set('d-sun', n(T.sun));
+
+  // tables
+  var cell = function(tr, t, cls){ var td=document.createElement('td'); td.textContent=t; if(cls) td.className=cls; tr.appendChild(td); return td; };
+  var pc = function(tr, v){ var td=cell(tr, p(v)); if(v!=null&&v>=1) td.className='good'; };
+  var fill = function(tb, rows, fn){ tb.replaceChildren.apply(tb, rows.map(function(r){ var tr=document.createElement('tr'); fn(tr,r); return tr; })); };
+  fill($('region'), regRows.concat([T]), function(tr,r){
+    if(r===T) tr.className='tot';
+    cell(tr,r.region); [r.forecast,r.mon_thu,r.fri,r.sat,r.sun,r.to_date].forEach(function(v){ cell(tr,n(v)); });
+    pc(tr,r.pct); cell(tr,n(r.weekend_target)); pc(tr,r.weekend_pct);
+  });
+  var areaRow = function(tr,r){
+    cell(tr,r.area); cell(tr,r.region||'','l');
+    [r.forecast,r.mon_thu,r.fri,r.sat,r.sun,r.to_date].forEach(function(v){ cell(tr,n(v)); });
+    pc(tr,r.pct); cell(tr,n(r.weekend_target)); pc(tr,r.weekend_pct);
+    var g=cell(tr,n(r.gap)); if(r.gap>0) g.className='bad';
+  };
+  fill($('area'), areas, areaRow);
+  fill($('areafoot'), [{area:'รวม 15 Area',region:'',forecast:T.forecast,mon_thu:T.mon_thu,fri:T.fri,sat:T.sat,sun:T.sun,to_date:T.to_date,pct:T.pct,weekend_target:T.weekend_target,weekend_pct:T.weekend_pct,gap:T.gap}], function(tr,r){ areaRow(tr,r); tr.lastChild.className=''; });
+
+  var cols = {'18 Pro Max':'pro_max','18 Pro':'pro','Duo':'duo','iPhone อื่น':'other'};
+  var models = Object.keys(cols).map(function(m){
+    var o={model:m, forecast:D.forecast.reduce(function(a,f){ return a+(+f[cols[m]]||0); },0)};
+    [['fri',FRI],['sat',SAT],['sun',SUN]].forEach(function(k){ o[k[0]] = dates[k[1]] ? sum(daily, function(r){ return r.date===k[1] && r.model===m; }) : null; });
+    o.weekend = hasData ? (o.fri||0)+(o.sat||0)+(o.sun||0) : null; return o;
+  });
+  fill($('model'), models, function(tr,r){ cell(tr,r.model); [r.forecast,r.fri,r.sat,r.sun,r.weekend].forEach(function(v){ cell(tr,n(v)); }); });
+
+  // chart
+  var svg=$('svg'), tip=$('tip'), box=$('chart'), NS='http://www.w3.org/2000/svg';
+  var el=function(tag,attrs,parent){ var e=document.createElementNS(NS,tag); for(var k in attrs) e.setAttribute(k,attrs[k]); (parent||svg).appendChild(e); return e; };
+  function draw(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    var W=Math.max(svg.clientWidth||box.clientWidth-24,280), rowH=30, H=areas.length*rowH+6;
+    svg.setAttribute('height',H); svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    var label=function(r){ return r.to_date==null ? n(r.forecast) : n(r.to_date)+' · '+p(r.pct); };
+    var probe=el('g',{}), lw=0, ew=0;
+    areas.forEach(function(r){ var t=el('text',{},probe); t.textContent=r.area; lw=Math.max(lw,t.getComputedTextLength()); t.textContent=label(r); ew=Math.max(ew,t.getComputedTextLength()); });
+    svg.removeChild(probe);
+    var left=Math.min(lw+12, W*0.45), right=ew+12;
+    var max=Math.max.apply(null, areas.map(function(r){ return Math.max(r.forecast, r.to_date||0); }));
+    var x=function(v){ return left + (Math.max(left+40,W-right)-left)*v/max; };
+    areas.forEach(function(r,i){
+      var g=el('g',{transform:'translate(0,'+(i*rowH+3)+')'});
+      el('rect',{x:0,y:0,width:W,height:rowH,fill:'transparent'},g);
+      var t=el('text',{x:left-8,y:rowH/2,dy:'0.35em','text-anchor':'end'},g); t.textContent=r.area;
+      el('rect',{x:left,y:6,height:rowH-12,rx:3,width:Math.max(0,x(r.forecast)-left),style:'fill:var(--track)'},g);
+      el('rect',{x:left,y:10,height:rowH-20,rx:2,width:Math.max(0,x(r.to_date||0)-left),style:'fill:var(--bar)'},g);
+      var v=el('text',{x:Math.max(x(r.forecast),x(r.to_date||0))+6,y:rowH/2,dy:'0.35em'},g); v.textContent=label(r);
+      var show=function(ev){
+        var b=box.getBoundingClientRect(), pt=ev.touches?ev.touches[0]:ev;
+        tip.replaceChildren();
+        [r.area,'ประมาณการ WK47: '+n(r.forecast),'จ.–พฤ.: '+n(r.mon_thu),'ศ. '+n(r.fri)+' · ส. '+n(r.sat)+' · อา. '+n(r.sun),'สะสม: '+n(r.to_date)+' ('+p(r.pct)+')'].forEach(function(line,j){
+          var dv=document.createElement('div'); dv.textContent=line; if(!j) dv.style.fontWeight='600'; tip.appendChild(dv); });
+        var lx=pt.clientX-b.left+12, ly=pt.clientY-b.top+14;
+        tip.style.left=Math.max(0,Math.min(lx, b.width-tip.offsetWidth-4))+'px'; tip.style.top=ly+'px'; tip.style.opacity=1;
+      };
+      g.addEventListener('mousemove',show); g.addEventListener('touchstart',show,{passive:true});
+      g.addEventListener('mouseleave',function(){ tip.style.opacity=0; });
+    });
+  }
+  draw();
+  var rt; window.addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(draw,100); });
+})();
+</script>
+</body>
+</html>
