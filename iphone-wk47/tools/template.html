@@ -35,6 +35,7 @@ tbody tr:last-child td{border-bottom:none}
 .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
 .tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.15);border-radius:8px;padding:6px 10px;font-size:12px;line-height:1.5;white-space:nowrap;opacity:0;font-variant-numeric:tabular-nums}
 .foot{font-size:12px;color:var(--muted);line-height:1.6}
+.filter{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.filter label{font-weight:600}.filter select{font:inherit;font-size:15px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);min-width:240px}.scope{color:var(--muted);font-size:13px}
 .stamp{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--muted);margin-top:8px}
 </style>
 </head>
@@ -45,6 +46,7 @@ tbody tr:last-child td{border-bottom:none}
     <p class="sub">สัปดาห์ 16–22 พ.ย. 2569 · Retail WW 15 Area · หน่วย: เครื่อง</p>
     <p class="lead" id="lead"></p>
     <span class="stamp" id="stamp"></span>
+    <div class="filter"><label for="area-pick">เลือก Area</label><select id="area-pick"><option value="">ทั้งหมด (15 Area)</option></select><span class="scope" id="scope"></span></div>
   </header>
 
   <section class="tiles">
@@ -60,7 +62,7 @@ tbody tr:last-child td{border-bottom:none}
   </section>
 
   <section>
-    <h2>ยอดสะสม ราย Area</h2>
+    <h2 id="chart-h">ยอดสะสม ราย Area</h2>
     <p class="hsub">แบ่งสีตามช่วงวัน · ชี้หรือแตะที่แถบเพื่อดูยอดรายวัน</p>
     <div class="chart" id="chart">
       <div class="legend" id="legend"></div>
@@ -69,7 +71,7 @@ tbody tr:last-child td{border-bottom:none}
     </div>
   </section>
 
-  <section>
+  <section id="region-sec">
     <h2>สรุปราย Region</h2>
     <div class="scroll"><table>
       <thead><tr><th>Region</th><th>จ.–พฤ.</th><th>ศ. 20</th><th>ส. 21</th><th>อา. 22</th><th>ศ.–อา.</th><th>สะสม</th></tr></thead>
@@ -78,9 +80,9 @@ tbody tr:last-child td{border-bottom:none}
   </section>
 
   <section>
-    <h2>รายละเอียดราย Area</h2>
+    <h2 id="detail-h">รายละเอียดราย Area</h2>
     <div class="scroll"><table>
-      <thead><tr><th>Area</th><th class="l">Region</th><th>จ.–พฤ.</th><th>ศ. 20</th><th>ส. 21</th><th>อา. 22</th><th>ศ.–อา.</th><th>สะสม</th></tr></thead>
+      <thead><tr><th id="d-c1">Area</th><th class="l" id="d-c2">Region</th><th>จ.–พฤ.</th><th>ศ. 20</th><th>ส. 21</th><th>อา. 22</th><th>ศ.–อา.</th><th>สะสม</th></tr></thead>
       <tbody id="area"></tbody>
       <tfoot id="areafoot"></tfoot>
     </table></div>
@@ -119,29 +121,57 @@ tbody tr:last-child td{border-bottom:none}
     o.to_date = hasData ? o.mon_thu + o.weekend : null;
     return o;
   };
-  var areas = D.areas.map(function(a){ var o = calc(daily.filter(function(r){ return r.area===a.area; })); o.area=a.area; o.region=a.region; return o; });
-  var regions = []; areas.forEach(function(a){ if(regions.indexOf(a.region)<0) regions.push(a.region); });
-  var areaSet = {}; areas.forEach(function(a){ areaSet[a.area]=a.region; });
-  var regRows = regions.map(function(r){ var o = calc(daily.filter(function(x){ return areaSet[x.area]===r; })); o.region=r; return o; });
-  var T = calc(daily.filter(function(x){ return areaSet[x.area]; })); T.region = 'รวม 15 Area';
+  var AREAS = D.areas;
+  var areaSet = {}; AREAS.forEach(function(a){ areaSet[a.area]=a.region; });
+  var all = daily.filter(function(x){ return areaSet[x.area]; });
+  var regions = []; AREAS.forEach(function(a){ if(regions.indexOf(a.region)<0) regions.push(a.region); });
+  var pick = $('area-pick');
+  AREAS.forEach(function(a){ var o=document.createElement('option'); o.value=a.area; o.textContent=a.area+' ('+a.region+')'; pick.appendChild(o); });
   var last = Object.keys(dates).sort().pop();
-  var top = areas.slice().sort(function(a,b){ return (b.weekend||0)-(a.weekend||0); })[0];
-
-  if(hasData){
-    set('lead', 'ยอด iPhone สะสม WK47 ถึงวันที่ '+(+last.slice(8,10))+' พ.ย. อยู่ที่ '+n(T.to_date)+' เครื่อง · ช่วงศุกร์–อาทิตย์ขายได้ '+n(T.weekend)+' เครื่อง · Area ที่ขายช่วงศุกร์–อาทิตย์ได้มากที่สุดคือ '+top.area+' ('+n(top.weekend)+' เครื่อง)');
-  } else { set('lead', 'ยังไม่มียอดขายรายวันของ WK47'); }
-  set('stamp', 'ข้อมูลล่าสุด: '+D.updated);
-  set('t-td', n(T.to_date)); set('t-mt', n(T.mon_thu)); set('t-we', n(T.weekend));
-  set('d-fri', n(T.fri)); set('d-sat', n(T.sat)); set('d-sun', n(T.sun));
-
   var cell = function(tr, t, cls){ var td=document.createElement('td'); td.textContent=t; if(cls) td.className=cls; tr.appendChild(td); return td; };
   var fill = function(tb, rows, fn){ tb.replaceChildren.apply(tb, rows.map(function(r){ var tr=document.createElement('tr'); fn(tr,r); return tr; })); };
   var nums = function(tr, r){ [r.mon_thu,r.fri,r.sat,r.sun,r.weekend,r.to_date].forEach(function(v){ cell(tr,n(v)); }); };
-  fill($('region'), regRows.concat([T]), function(tr,r){ if(r===T) tr.className='tot'; cell(tr,r.region); nums(tr,r); });
-  fill($('area'), areas, function(tr,r){ cell(tr,r.area); cell(tr,r.region,'l'); nums(tr,r); });
-  fill($('areafoot'), [T], function(tr,r){ cell(tr,'รวม 15 Area'); cell(tr,'','l'); nums(tr,r); });
-  var models = ['18 Pro Max','18 Pro','Duo','iPhone อื่น'].map(function(m){ var o = calc(daily.filter(function(r){ return r.model===m && areaSet[r.area]; })); o.model=m; return o; });
-  fill($('model'), models, function(tr,r){ cell(tr,r.model); nums(tr,r); });
+  window.__bars = [];
+  set('stamp', 'ข้อมูลล่าสุด: '+D.updated);
+
+  function render(){
+    var sel = pick.value;
+    var scopeRows = sel ? all.filter(function(r){ return r.area===sel; }) : all;
+    var T = calc(scopeRows);
+    var label = sel ? sel : '15 Area';
+    var items;
+    if(sel){
+      var shops = {}; scopeRows.forEach(function(r){ shops[r.shop] = r.shop_name; });
+      items = Object.keys(shops).map(function(s){ var o = calc(scopeRows.filter(function(r){ return r.shop===s; })); o.name = shops[s]; o.sub = s; return o; })
+        .sort(function(a,b){ return (b.to_date||0)-(a.to_date||0); });
+    } else {
+      items = AREAS.map(function(a){ var o = calc(all.filter(function(r){ return r.area===a.area; })); o.name=a.area; o.sub=a.region; return o; });
+    }
+    var top = items.slice().sort(function(a,b){ return (b.weekend||0)-(a.weekend||0); })[0];
+    var unit = sel ? 'สาขา' : 'Area ';
+    if(hasData){
+      set('lead', 'ยอด iPhone สะสม'+(sel?' '+sel:'')+' WK47 ถึงวันที่ '+(+last.slice(8,10))+' พ.ย. อยู่ที่ '+n(T.to_date)+' เครื่อง · ช่วงศุกร์–อาทิตย์ขายได้ '+n(T.weekend)+' เครื่อง'+(top&&top.weekend?' · '+unit+'ที่ขายช่วงศุกร์–อาทิตย์ได้มากที่สุดคือ '+top.name+' ('+n(top.weekend)+' เครื่อง)':''));
+    } else { set('lead', 'ยังไม่มียอดขายรายวันของ WK47'); }
+    set('scope', sel ? 'แสดงเฉพาะ '+sel+' · '+items.length+' สาขาที่มียอดขาย' : '');
+    set('t-td', n(T.to_date)); set('t-mt', n(T.mon_thu)); set('t-we', n(T.weekend));
+    set('d-fri', n(T.fri)); set('d-sat', n(T.sat)); set('d-sun', n(T.sun));
+    $('region-sec').hidden = !!sel;
+    set('chart-h', sel ? 'ยอดสะสม ราย สาขา · '+sel : 'ยอดสะสม ราย Area');
+    set('detail-h', sel ? 'รายละเอียดราย สาขา · '+sel : 'รายละเอียดราย Area');
+    set('d-c1', sel ? 'สาขา' : 'Area'); set('d-c2', sel ? 'รหัสร้าน' : 'Region');
+
+    var regRows = regions.map(function(r){ var o = calc(all.filter(function(x){ return areaSet[x.area]===r; })); o.region=r; return o; });
+    var TA = calc(all); TA.region='รวม 15 Area';
+    fill($('region'), regRows.concat([TA]), function(tr,r){ if(r===TA) tr.className='tot'; cell(tr,r.region); nums(tr,r); });
+    fill($('area'), items, function(tr,r){ cell(tr,r.name); cell(tr,r.sub,'l'); nums(tr,r); });
+    fill($('areafoot'), [T], function(tr,r){ cell(tr,'รวม '+label); cell(tr,'','l'); nums(tr,r); });
+    var models = ['18 Pro Max','18 Pro','Duo','iPhone อื่น'].map(function(m){ var o = calc(scopeRows.filter(function(r){ return r.model===m; })); o.model=m; return o; });
+    fill($('model'), models, function(tr,r){ cell(tr,r.model); nums(tr,r); });
+    window.__bars = items;
+    if(window.__draw) window.__draw();
+  }
+  pick.addEventListener('change', function(){ render(); try{ history.replaceState(null,'',pick.value?'#'+encodeURIComponent(pick.value):location.pathname); }catch(e){} });
+  try { var h = decodeURIComponent(location.hash.slice(1)); if(h && areaSet[h]) pick.value = h; } catch(e){}
 
   var SEG = [['mon_thu','จ.–พฤ.','var(--seg0)'],['fri','ศ. 20','var(--seg1)'],['sat','ส. 21','var(--seg2)'],['sun','อา. 22','var(--seg3)']];
   var lg = $('legend');
@@ -149,26 +179,27 @@ tbody tr:last-child td{border-bottom:none}
   var svg=$('svg'), tip=$('tip'), box=$('chart'), NS='http://www.w3.org/2000/svg';
   var el=function(tag,attrs,parent){ var e=document.createElementNS(NS,tag); for(var k in attrs) e.setAttribute(k,attrs[k]); (parent||svg).appendChild(e); return e; };
   function draw(){
+    var rows = window.__bars || [];
     while(svg.firstChild) svg.removeChild(svg.firstChild);
-    var W=Math.max(svg.clientWidth||box.clientWidth-24,280), rowH=30, H=areas.length*rowH+6;
+    var W=Math.max(svg.clientWidth||box.clientWidth-24,280), rowH=30, H=rows.length*rowH+6;
     svg.setAttribute('height',H); svg.setAttribute('viewBox','0 0 '+W+' '+H);
     var probe=el('g',{}), lw=0, ew=0;
-    areas.forEach(function(r){ var t=el('text',{},probe); t.textContent=r.area; lw=Math.max(lw,t.getComputedTextLength()); t.textContent=n(r.to_date); ew=Math.max(ew,t.getComputedTextLength()); });
+    rows.forEach(function(r){ var t=el('text',{},probe); t.textContent=r.name; lw=Math.max(lw,t.getComputedTextLength()); t.textContent=n(r.to_date); ew=Math.max(ew,t.getComputedTextLength()); });
     svg.removeChild(probe);
     var left=Math.min(lw+12, W*0.45), right=ew+12;
-    var max=Math.max(1, Math.max.apply(null, areas.map(function(r){ return r.to_date||0; })));
+    var max=Math.max(1, Math.max.apply(null, rows.map(function(r){ return r.to_date||0; })));
     var span=Math.max(40, W-right-left);
-    areas.forEach(function(r,i){
+    rows.forEach(function(r,i){
       var g=el('g',{transform:'translate(0,'+(i*rowH+3)+')'});
       el('rect',{x:0,y:0,width:W,height:rowH,fill:'transparent'},g);
-      var t=el('text',{x:left-8,y:rowH/2,dy:'0.35em','text-anchor':'end'},g); t.textContent=r.area;
+      var t=el('text',{x:left-8,y:rowH/2,dy:'0.35em','text-anchor':'end'},g); t.textContent=r.name;
       var x0=left;
       SEG.forEach(function(s){ var w=span*(r[s[0]]||0)/max; if(w>0){ el('rect',{x:x0,y:7,height:rowH-14,width:w,style:'fill:'+s[2]},g); x0+=w; } });
       var v=el('text',{x:x0+6,y:rowH/2,dy:'0.35em'},g); v.textContent=n(r.to_date);
       var show=function(ev){
         var b=box.getBoundingClientRect(), pt=ev.touches?ev.touches[0]:ev;
         tip.replaceChildren();
-        [r.area,'จ.–พฤ.: '+n(r.mon_thu),'ศ. '+n(r.fri)+' · ส. '+n(r.sat)+' · อา. '+n(r.sun),'ศ.–อา.: '+n(r.weekend),'สะสม: '+n(r.to_date)].forEach(function(line,j){
+        [r.name,'จ.–พฤ.: '+n(r.mon_thu),'ศ. '+n(r.fri)+' · ส. '+n(r.sat)+' · อา. '+n(r.sun),'ศ.–อา.: '+n(r.weekend),'สะสม: '+n(r.to_date)].forEach(function(line,j){
           var dv=document.createElement('div'); dv.textContent=line; if(!j) dv.style.fontWeight='600'; tip.appendChild(dv); });
         var lx=pt.clientX-b.left+12, ly=pt.clientY-b.top+14;
         tip.style.left=Math.max(0,Math.min(lx, b.width-tip.offsetWidth-4))+'px'; tip.style.top=ly+'px'; tip.style.opacity=1;
@@ -177,7 +208,8 @@ tbody tr:last-child td{border-bottom:none}
       g.addEventListener('mouseleave',function(){ tip.style.opacity=0; });
     });
   }
-  draw();
+  window.__draw = draw;
+  render();
   var rt; window.addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(draw,100); });
 })();
 </script>
