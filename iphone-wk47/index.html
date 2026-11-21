@@ -76,6 +76,11 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
 .nsum .card{padding:10px 12px}.nsum b{font-size:20px}
 .nt th.grp{text-align:center;color:var(--fg);border-bottom:2px solid var(--line)}
 .nt th.g18,.nt td.g18{background:rgba(58,120,212,.06)}
+.nt th.gT,.nt td.gT{background:rgba(217,119,11,.07)}
+.nt td.gT{font-weight:600}
+.nt th,.nt td{padding:6px 7px}
+.ntot{border-color:var(--wk)}
+.nline{display:flex;gap:10px;align-items:baseline;margin-top:4px;font-variant-numeric:tabular-nums}.nline .nl{color:var(--muted);font-size:12px;min-width:90px}.nline b{font-size:18px;min-width:48px}
 .nt td.l small{display:block;margin:0;color:var(--muted)}
 .nt tr.extra td{color:var(--muted)}
 .ngrp{margin-top:14px}.ngrp+.ngrp{border-top:1px dashed var(--line);padding-top:12px}
@@ -137,7 +142,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   </div>
 
   <div id="tab-north" hidden>
-    <div class="bar"><div class="row"><span class="lbl">กลุ่มรุ่น</span><div class="seg" id="ngrp"><button data-g="18">iPhone 18 Series</button><button data-g="N">iPhone N-</button></div><span class="lbl">ดูถึงวันที่</span><div class="seg" id="nday"></div><span class="lbl" id="n-note"></span></div></div>
+    <div class="bar"><div class="row"><span class="lbl">กลุ่มรุ่น</span><div class="seg" id="ngrp"><button data-g="A">ทั้งหมด</button><button data-g="18">iPhone 18 Series</button><button data-g="N">iPhone N-</button></div><span class="lbl">ดูถึงวันที่</span><div class="seg" id="nday"></div><span class="lbl" id="n-note"></span></div></div>
     <div id="north"></div>
     <p class="foot" id="n-foot"></p>
   </div>
@@ -368,15 +373,17 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   // ---------- Tab: โฟกัสไอโฟน North ----------
   var NT = D.north;
   var nDays = NT ? (function(){ var a=[], d=NT.from; while(d<=NT.to){ a.push(d); d=addDays(d,1); } return a; })() : [];
-  S.ng = '18';
+  S.ng = 'A';
   [].forEach.call(document.querySelectorAll('#ngrp button'), function(b){ b.onclick=function(){ S.ng=b.dataset.g; drawNorth(); }; });
   S.nd = nDays.length ? (D.last>=NT.to ? NT.to : (D.last<NT.from ? NT.from : D.last)) : null;
+  var NG = {'18':['18','iPhone 18 Series','t18','d18','c18'], 'N':['N','iPhone N-','tn','dn','cn'], 'T':['T','รวมทั้งหมด','tt','dt','ct']};
+  var nGroups = function(){ return S.ng==='A' ? [NG['18'],NG.N,NG.T] : [NG[S.ng]]; };
   function drawNorth(){
     if(!NT) return;
     var seg=$('nday'); seg.replaceChildren();
     nDays.forEach(function(d){ var b=el('button',d===S.nd?'on':null,TH_DOW[dow(d)]+' '+(+d.slice(8,10))+' พ.ย.'); b.onclick=function(){ S.nd=d; drawNorth(); }; seg.appendChild(b); });
     [].forEach.call(document.querySelectorAll('#ngrp button'), function(b){ b.className = b.dataset.g===S.ng ? 'on' : ''; });
-    var k = nDays.indexOf(S.nd)+1;
+    var k = nDays.indexOf(S.nd)+1, GS=nGroups();
     $('n-note').textContent = 'TG รายวัน = Target ของวันที่เลือก · TG สะสม = Target รายวัน × '+k+' วัน (20 พ.ย. ถึงวันที่เลือก) · หน่วย: เครื่อง'+(S.nd>D.last?' · วันนี้ยังไม่มีข้อมูลขาย':'');
     var box=$('north'); box.replaceChildren();
     NT.boards.forEach(function(bd){
@@ -384,68 +391,72 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
       var rowsDay=R.filter(function(r){ return r.d===S.nd && SH[r.s] && SH[r.s].a===bd.area; });
       var rowsCum=R.filter(function(r){ return r.d>=NT.from && r.d<=S.nd && SH[r.s] && SH[r.s].a===bd.area; });
       var q=function(rows,shop,g){ return rows.reduce(function(s,r){ return s + ((r.s===shop && (g==='18'?TOP[r.m]:!TOP[r.m])) ? r.q : 0); },0); };
-      var list=bd.shops.map(function(x){ return {c:x.c, n:x.n, t18:x.t18, tn:x.tn, d18:q(rowsDay,x.c,'18'), dn:q(rowsDay,x.c,'N'), c18:q(rowsCum,x.c,'18'), cn:q(rowsCum,x.c,'N')}; });
+      var mk=function(c,n,t18,tn,extra){ var o={c:c,n:n,t18:t18,tn:tn,extra:extra, d18:q(rowsDay,c,'18'), dn:q(rowsDay,c,'N'), c18:q(rowsCum,c,'18'), cn:q(rowsCum,c,'N')}; o.tt=(t18==null&&tn==null)?null:(t18||0)+(tn||0); o.dt=o.d18+o.dn; o.ct=o.c18+o.cn; return o; };
+      var list=bd.shops.map(function(x){ return mk(x.c,x.n,x.t18,x.tn,false); });
       var extra={}; rowsCum.forEach(function(r){ if(!codes[r.s]) extra[r.s]=1; });
-      var ex=Object.keys(extra).map(function(s){ return {c:s, n:SH[s].n, t18:null, tn:null, d18:q(rowsDay,s,'18'), dn:q(rowsDay,s,'N'), c18:q(rowsCum,s,'18'), cn:q(rowsCum,s,'N'), extra:true}; }).sort(function(a,b){ return (b.c18+b.cn)-(a.c18+a.cn); });
-      var tot={t18:0,tn:0,d18:0,dn:0,c18:0,cn:0}; list.concat(ex).forEach(function(r){ ['d18','dn','c18','cn'].forEach(function(f){ tot[f]+=r[f]; }); }); list.forEach(function(r){ tot.t18+=r.t18||0; tot.tn+=r.tn||0; });
-      var sec=el('div','sec nb'), hd=el('div','sec-h'), hx=el('div'); hx.appendChild(el('h2',null,'กระดาน'+bd.name+' · '+bd.area)); hx.appendChild(el('p',null,bd.shops.length+' สาขาที่มี Target'+(ex.length?' · อีก '+ex.length+' สาขาใน Area ที่มียอดแต่ไม่มี Target':''))); hd.appendChild(hx); var pngBtn=el('button','btn','Download PNG'); hd.appendChild(pngBtn); sec.appendChild(hd);
-      [['18','iPhone 18 Series','t18','d18','c18'],['N','iPhone N-','tn','dn','cn']].filter(function(G){ return G[0]===S.ng; }).forEach(function(G){
-        pngBtn.onclick=function(){ northPNG(bd, G, k, list.concat(ex), tot); };
-        var gt=G[2], gd=G[3], gc=G[4];
-        var sub=el('div','ngrp'); sub.appendChild(el('h3',null,G[1]));
-        var sm=el('div','nsum');
-        [['วันนี้ ('+thDate(S.nd)+')',tot[gd],tot[gt]],['สะสม (20 พ.ย. – '+thDate(S.nd)+')',tot[gc],tot[gt]*k]].forEach(function(x){ var a=ach(x[1],x[2]), c=el('div','card'); c.appendChild(el('div','k-l',G[1]+' · '+x[0])); var v=el('div'); v.appendChild(el('b',achCls(a),pct(a))); v.appendChild(document.createTextNode('  '+fmt(x[1])+' / '+fmt(x[2])+' เครื่อง')); c.appendChild(v); sm.appendChild(c); });
-        sub.appendChild(sm);
-        var tw=el('div','tw'), tb=el('table','nt'), th=el('thead'), r1=el('tr');
-        ['สาขา','TG วัน','ขาย','%','TG สะสม','ขายสะสม','%'].forEach(function(x,i){ r1.appendChild(el('th',i?null:'l',x)); });
-        th.appendChild(r1); tb.appendChild(th);
-        var body=el('tbody');
-        list.concat(ex).forEach(function(r){
-          var tr=el('tr',r.extra?'extra':null), nm=el('td','l'); nm.appendChild(document.createTextNode(r.n)); if(r.extra) nm.appendChild(el('small',null,'ไม่มี Target')); tr.appendChild(nm);
-          var td=r[gt], tc=td==null?null:td*k, ad=ach(r[gd],td), ac=ach(r[gc],tc);
-          [[fmtT(td)],[fmt(r[gd]),(td&&!r[gd]&&S.nd<=D.last)?'bad':''],[pct(ad),achCls(ad)],[fmtT(tc)],[fmt(r[gc]),(tc&&!r[gc])?'bad':''],[pct(ac),achCls(ac)]].forEach(function(v){ tr.appendChild(el('td',v[1]||null,v[0])); });
-          body.appendChild(tr);
-        });
-        tb.appendChild(body);
-        var tf=el('tfoot'), fr=el('tr'), T1=tot[gt], TC=T1*k, A1=ach(tot[gd],T1), AC=ach(tot[gc],TC);
-        fr.appendChild(el('td','l','รวม'+bd.name));
-        [[fmt(T1)],[fmt(tot[gd])],[pct(A1),achCls(A1)],[fmt(TC)],[fmt(tot[gc])],[pct(AC),achCls(AC)]].forEach(function(v){ fr.appendChild(el('td',v[1]||null,v[0])); });
-        tf.appendChild(fr); tb.appendChild(tf); tw.appendChild(tb); sub.appendChild(tw); sec.appendChild(sub);
+      var ex=Object.keys(extra).map(function(s){ return mk(s,SH[s].n,null,null,true); }).sort(function(a,b){ return b.ct-a.ct; });
+      var rows=list.concat(ex), tot={t18:0,tn:0,tt:0,d18:0,dn:0,dt:0,c18:0,cn:0,ct:0};
+      rows.forEach(function(r){ ['d18','dn','dt','c18','cn','ct'].forEach(function(f){ tot[f]+=r[f]; }); });
+      list.forEach(function(r){ tot.t18+=r.t18||0; tot.tn+=r.tn||0; tot.tt+=r.tt||0; });
+      var sec=el('div','sec nb'), hd=el('div','sec-h'), hx=el('div');
+      hx.appendChild(el('h2',null,'กระดาน'+bd.name+' · '+bd.area)); hx.appendChild(el('p',null,bd.shops.length+' สาขาที่มี Target'+(ex.length?' · อีก '+ex.length+' สาขาใน Area ที่มียอดแต่ไม่มี Target':'')));
+      hd.appendChild(hx); var pngBtn=el('button','btn','Download PNG'); pngBtn.onclick=function(){ northPNG(bd, GS, k, rows, tot); }; hd.appendChild(pngBtn); sec.appendChild(hd);
+      // summary cards: one per group, today + cumulative
+      var sm=el('div','nsum');
+      GS.forEach(function(G){
+        var c=el('div','card'+(G[0]==='T'?' ntot':'')); c.appendChild(el('div','k-l',G[1]));
+        [['วันนี้ ('+thDate(S.nd)+')',tot[G[3]],tot[G[2]]],['สะสม',tot[G[4]],tot[G[2]]*k]].forEach(function(x){ var a=ach(x[1],x[2]), v=el('div','nline'); v.appendChild(el('span','nl',x[0])); v.appendChild(el('b',achCls(a),pct(a))); v.appendChild(el('span',null,fmt(x[1])+' / '+fmt(x[2]))); c.appendChild(v); });
+        sm.appendChild(c);
       });
-      box.appendChild(sec);
+      sec.appendChild(sm);
+      var tw=el('div','tw'), tb=el('table','nt'), th=el('thead'), r1=el('tr'), r2=el('tr');
+      var hcell=function(row,txt,cls,span,rs){ var c=el('th',cls||null,txt); if(span) c.colSpan=span; if(rs) c.rowSpan=rs; row.appendChild(c); };
+      hcell(r1,'สาขา','l',null,GS.length>1?2:1);
+      if(GS.length>1){ GS.forEach(function(G){ hcell(r1,G[1],'grp g'+G[0],6); }); }
+      var sub=['TG วัน','ขาย','%','TG สะสม','ขายสะสม','%'];
+      GS.forEach(function(G){ sub.forEach(function(x){ hcell(GS.length>1?r2:r1,x,'g'+G[0]); }); });
+      th.appendChild(r1); if(GS.length>1) th.appendChild(r2); tb.appendChild(th);
+      var body=el('tbody');
+      rows.forEach(function(r){
+        var tr=el('tr',r.extra?'extra':null), nm=el('td','l'); nm.appendChild(document.createTextNode(r.n)); if(r.extra) nm.appendChild(el('small',null,'ไม่มี Target')); tr.appendChild(nm);
+        GS.forEach(function(G){ var td=r[G[2]], tc=td==null?null:td*k, ad=ach(r[G[3]],td), ac=ach(r[G[4]],tc), g='g'+G[0];
+          [[fmtT(td)],[fmt(r[G[3]]),(td&&!r[G[3]]&&S.nd<=D.last)?'bad':''],[pct(ad),achCls(ad)],[fmtT(tc)],[fmt(r[G[4]]),(tc&&!r[G[4]])?'bad':''],[pct(ac),achCls(ac)]].forEach(function(v){ tr.appendChild(el('td',(g+' '+(v[1]||'')).trim(),v[0])); }); });
+        body.appendChild(tr);
+      });
+      tb.appendChild(body);
+      var tf=el('tfoot'), fr=el('tr'); fr.appendChild(el('td','l','รวม'+bd.name));
+      GS.forEach(function(G){ var T1=tot[G[2]], TC=T1*k, A1=ach(tot[G[3]],T1), AC=ach(tot[G[4]],TC), g='g'+G[0];
+        [[fmt(T1)],[fmt(tot[G[3]])],[pct(A1),achCls(A1)],[fmt(TC)],[fmt(tot[G[4]])],[pct(AC),achCls(AC)]].forEach(function(v){ fr.appendChild(el('td',(g+' '+(v[1]||'')).trim(),v[0])); }); });
+      tf.appendChild(fr); tb.appendChild(tf); tw.appendChild(tb); sec.appendChild(tw); box.appendChild(sec);
     });
-    $('n-foot').textContent = 'ที่มา: '+NT.label+' · ยอดขายจาก TSM (สาขา WW, iPhone บิล Payment) ถึง '+D.updated+' · iPhone 18 Series = 18 Pro Max + 18 Pro + Duo · iPhone N- = รุ่นอื่นทั้งหมด · ตัวเลขสีแดง = มี Target แต่ยังไม่มียอด · ช่อง "—" = ไม่มี Target ในรูป · "สาขาที่ไม่มี Target" คือสาขาใน Area เดียวกันที่มียอดขาย นับรวมในยอดรวมของกระดานด้วย';
+    $('n-foot').textContent = 'ที่มา: '+NT.label+' · ยอดขายจาก TSM (สาขา WW, iPhone บิล Payment) ถึง '+D.updated+' · iPhone 18 Series = 18 Pro Max + 18 Pro + Duo · iPhone N- = รุ่นอื่นทั้งหมด · รวมทั้งหมด = 18 Series + N- · ตัวเลขสีแดง = มี Target แต่ยังไม่มียอด · ช่อง "—" = ไม่มี Target ในรูป · สาขาที่ไม่มี Target แต่มียอดขายใน Area นับรวมในยอดรวมของกระดานด้วย';
   }
-  function northPNG(bd, G, k, rows, tot){
-    var gt=G[2], gd=G[3], gc=G[4], sc=2, W=1100, rowH=34, top=150, H=top+rowH*(rows.length+2)+60;
+  function northPNG(bd, GS, k, rows, tot){
+    var sc=2, pad=30, nameW=300, colW=70, W=pad*2+nameW+GS.length*6*colW, rowH=32, cardH=70, top=96+cardH+30, H=top+rowH*(rows.length+3)+50;
     var cv=document.createElement('canvas'); cv.width=W*sc; cv.height=H*sc; var x=cv.getContext('2d'); x.scale(sc,sc);
     var F='"IBM Plex Sans Thai","Sarabun","Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif';
-    x.fillStyle='#ffffff'; x.fillRect(0,0,W,H);
-    x.fillStyle='#1b1a18'; x.font='700 24px '+F; x.fillText('กระดาน'+bd.name+' · '+bd.area+' · '+G[1], 30, 44);
-    x.fillStyle='#6f6b64'; x.font='14px '+F; x.fillText('ยอดขายถึง '+D.updated+' · วันที่เลือก '+thDate(S.nd)+' · TG สะสม = TG รายวัน × '+k+' วัน (20 พ.ย. – '+thDate(S.nd)+') · หน่วย: เครื่อง', 30, 70);
-    var A1=ach(tot[gd],tot[gt]), AC=ach(tot[gc],tot[gt]*k);
-    [['วันนี้ ('+thDate(S.nd)+')',A1,tot[gd],tot[gt]],['สะสม',AC,tot[gc],tot[gt]*k]].forEach(function(c,i){
-      var bx=30+i*360; x.strokeStyle='#e6e3dc'; x.lineWidth=1; x.strokeRect(bx,84,340,48);
-      x.fillStyle='#6f6b64'; x.font='13px '+F; x.fillText(c[0],bx+12,103);
-      x.fillStyle=c[1]!=null&&c[1]>=1?'#1a7f37':'#1b1a18'; x.font='700 20px '+F; x.fillText(pct(c[1]),bx+12,125);
-      x.fillStyle='#1b1a18'; x.font='15px '+F; x.fillText(fmt(c[2])+' / '+fmt(c[3])+' เครื่อง',bx+80,125);
-    });
-    var cols=[['สาขา',30,'l'],['TG วัน',560,'r'],['ขาย',650,'r'],['%',740,'r'],['TG สะสม',860,'r'],['ขายสะสม',960,'r'],['%',1070,'r']];
-    var y=top+18; x.font='600 13px '+F; x.fillStyle='#6f6b64';
-    cols.forEach(function(c){ x.textAlign=c[2]==='l'?'left':'right'; x.fillText(c[0],c[1],y); });
-    x.strokeStyle='#e6e3dc'; x.beginPath(); x.moveTo(30,y+10); x.lineTo(W-30,y+10); x.stroke();
-    var put=function(vals, yy, bold, muted){
-      vals.forEach(function(v,i){ var c=cols[i]; x.textAlign=c[2]==='l'?'left':'right'; x.font=(bold?'700 ':'')+'15px '+F; x.fillStyle=v[1]==='good'?'#1a7f37':v[1]==='bad'?'#c62828':(muted?'#8a857d':'#1b1a18'); x.fillText(v[0],c[1],yy); });
+    x.fillStyle='#fff'; x.fillRect(0,0,W,H);
+    x.fillStyle='#1b1a18'; x.font='700 24px '+F; x.fillText('กระดาน'+bd.name+' · '+bd.area+(GS.length===1?' · '+GS[0][1]:''), pad, 42);
+    x.fillStyle='#6f6b64'; x.font='14px '+F; x.fillText('ยอดขายถึง '+D.updated+' · วันที่เลือก '+thDate(S.nd)+' · TG สะสม = TG รายวัน × '+k+' วัน (20 พ.ย. – '+thDate(S.nd)+') · หน่วย: เครื่อง', pad, 68);
+    var cw=(W-pad*2-(GS.length-1)*12)/GS.length;
+    GS.forEach(function(G,i){ var bx=pad+i*(cw+12), by=84; x.strokeStyle='#e6e3dc'; x.lineWidth=1; x.strokeRect(bx,by,cw,cardH);
+      x.textAlign='left'; x.fillStyle='#1b1a18'; x.font='700 14px '+F; x.fillText(G[1],bx+12,by+20);
+      [['วันนี้',tot[G[3]],tot[G[2]]],['สะสม',tot[G[4]],tot[G[2]]*k]].forEach(function(c,j){ var a=ach(c[1],c[2]), yy=by+42+j*20; x.fillStyle='#6f6b64'; x.font='13px '+F; x.fillText(c[0],bx+12,yy); x.fillStyle=a!=null&&a>=1?'#1a7f37':'#1b1a18'; x.font='700 14px '+F; x.fillText(pct(a),bx+70,yy); x.fillStyle='#1b1a18'; x.font='13px '+F; x.fillText(fmt(c[1])+' / '+fmt(c[2])+' เครื่อง',bx+125,yy); }); });
+    var y=top; x.font='700 13px '+F;
+    if(GS.length>1){ GS.forEach(function(G,i){ var gx=pad+nameW+i*6*colW; if(G[0]==='18'){ x.fillStyle='#eef3fb'; x.fillRect(gx,y-16,6*colW,rowH*(rows.length+3)); } if(G[0]==='T'){ x.fillStyle='#faf6ec'; x.fillRect(gx,y-16,6*colW,rowH*(rows.length+3)); } x.fillStyle='#1b1a18'; x.textAlign='center'; x.fillText(G[1],gx+3*colW,y); }); y+=rowH-6; }
+    x.fillStyle='#6f6b64'; x.font='600 12px '+F; x.textAlign='left'; x.fillText('สาขา',pad,y);
+    GS.forEach(function(G,i){ ['TG วัน','ขาย','%','TG สะสม','ขายสะสม','%'].forEach(function(h,j){ x.textAlign='right'; x.fillText(h,pad+nameW+(i*6+j+1)*colW-8,y); }); });
+    x.strokeStyle='#e6e3dc'; x.beginPath(); x.moveTo(pad,y+10); x.lineTo(W-pad,y+10); x.stroke();
+    var put=function(name, r, yy, bold, muted, isTot){
+      x.textAlign='left'; x.font=(bold?'700 ':'')+'14px '+F; x.fillStyle=muted?'#8a857d':'#1b1a18'; x.fillText(name,pad,yy);
+      GS.forEach(function(G,i){ var td=r[G[2]], tc=td==null?null:td*k, ad=ach(r[G[3]],td), ac=ach(r[G[4]],tc);
+        [[fmtT(td)],[fmt(r[G[3]]),(!isTot&&td&&!r[G[3]]&&S.nd<=D.last)?'bad':''],[pct(ad),achCls(ad)],[fmtT(tc)],[fmt(r[G[4]]),(!isTot&&tc&&!r[G[4]])?'bad':''],[pct(ac),achCls(ac)]].forEach(function(v,j){ x.textAlign='right'; x.font=(bold?'700 ':'')+'14px '+F; x.fillStyle=v[1]==='good'?'#1a7f37':v[1]==='bad'?'#c62828':(muted?'#8a857d':'#1b1a18'); x.fillText(v[0],pad+nameW+(i*6+j+1)*colW-8,yy); }); });
     };
-    rows.forEach(function(r,i){
-      var yy=top+18+rowH*(i+1); var td=r[gt], tc=td==null?null:td*k, ad=ach(r[gd],td), ac=ach(r[gc],tc);
-      if(i%2===1){ x.fillStyle='#faf9f6'; x.fillRect(30,yy-22,W-60,rowH); }
-      put([[r.n+(r.extra?' (ไม่มี Target)':'')],[fmtT(td)],[fmt(r[gd]),(td&&!r[gd]&&S.nd<=D.last)?'bad':''],[pct(ad),achCls(ad)],[fmtT(tc)],[fmt(r[gc]),(tc&&!r[gc])?'bad':''],[pct(ac),achCls(ac)]], yy, false, r.extra);
-    });
-    var yy=top+18+rowH*(rows.length+1); x.strokeStyle='#cfcac0'; x.beginPath(); x.moveTo(30,yy-24); x.lineTo(W-30,yy-24); x.stroke();
-    put([['รวม'+bd.name],[fmt(tot[gt])],[fmt(tot[gd])],[pct(A1),achCls(A1)],[fmt(tot[gt]*k)],[fmt(tot[gc])],[pct(AC),achCls(AC)]], yy, true);
-    x.textAlign='left'; x.fillStyle='#8a857d'; x.font='12px '+F; x.fillText('แดง = มี Target แต่ยังไม่มียอด · เขียว = ถึง Target · ข้อมูลจาก TSM (สาขา WW)', 30, H-24);
-    var a=document.createElement('a'); a.download='north_'+(bd.name==='เหนือบน'?'upper':'lower')+'_'+(G[0]==='18'?'iphone18series':'iphoneN-')+'_'+S.nd+'.png'; a.href=cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
+    rows.forEach(function(r,i){ var yy=y+rowH*(i+1); put(r.n+(r.extra?' (ไม่มี Target)':''), r, yy, false, r.extra, false); x.strokeStyle='#f0ede7'; x.beginPath(); x.moveTo(pad,yy+11); x.lineTo(W-pad,yy+11); x.stroke(); });
+    var yy=y+rowH*(rows.length+1); x.strokeStyle='#cfcac0'; x.beginPath(); x.moveTo(pad,yy-22); x.lineTo(W-pad,yy-22); x.stroke();
+    put('รวม'+bd.name, tot, yy, true, false, true);
+    x.textAlign='left'; x.fillStyle='#8a857d'; x.font='12px '+F; x.fillText('แดง = มี Target แต่ยังไม่มียอด · เขียว = ถึง Target · รวมทั้งหมด = iPhone 18 Series + iPhone N- · ข้อมูลจาก TSM (สาขา WW)', pad, H-20);
+    var a=document.createElement('a'); a.download='north_'+(bd.name==='เหนือบน'?'upper':'lower')+'_'+(GS.length>1?'all':(GS[0][0]==='18'?'iphone18series':'iphoneN-'))+'_'+S.nd+'.png'; a.href=cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
   }
   // generic: draw an on-screen table to a PNG (keeps green/red colours)
   function tablePNG(title, subtitle, tbl, fname){
