@@ -107,12 +107,12 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   <div class="models" id="models"></div>
 
   <div class="sec" id="sec-area">
-    <div class="sec-h"><div><h2>ราย Area · เทียบ Target ศ.–อา. 20–22 พ.ย.</h2><p id="area-p">Target · ยอดขาย ศ.–อา. · %ACH แยก iPhone 18 Series และ iPhone N-</p></div><div class="row" style="margin:0"><div class="seg tmode2"><button data-m="q">Qty</button><button data-m="n">Rev</button></div><button class="btn" id="csv-area">Export CSV</button></div></div>
+    <div class="sec-h"><div><h2>ราย Area · เทียบ Target ศ.–อา. 20–22 พ.ย.</h2><p id="area-p">Target · ยอดขาย ศ.–อา. · %ACH แยก iPhone 18 Series และ iPhone N-</p></div><div class="row" style="margin:0"><div class="seg tmode2"><button data-m="q">Qty</button><button data-m="n">Rev</button></div><button class="btn" id="png-area">Download PNG</button><button class="btn" id="csv-area">Export CSV</button></div></div>
     <div class="tw"><table id="t-area"></table></div>
   </div>
 
   <div class="sec" id="sec-shop">
-    <div class="sec-h"><div><h2>รายสาขา</h2><p>สาขาที่มียอดขายในช่วงวันที่ที่เลือก</p></div><div class="row" style="margin:0"><input type="search" id="q" placeholder="ค้นหาสาขา / รหัส"><button class="btn" id="csv-shop">Export CSV</button></div></div>
+    <div class="sec-h"><div><h2>รายสาขา</h2><p>สาขาที่มียอดขายในช่วงวันที่ที่เลือก</p></div><div class="row" style="margin:0"><input type="search" id="q" placeholder="ค้นหาสาขา / รหัส"><button class="btn" id="png-shop">Download PNG</button><button class="btn" id="csv-shop">Export CSV</button></div></div>
     <div class="tw tall"><table id="t-shop"></table></div>
   </div>
 
@@ -447,6 +447,42 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     x.textAlign='left'; x.fillStyle='#8a857d'; x.font='12px '+F; x.fillText('แดง = มี Target แต่ยังไม่มียอด · เขียว = ถึง Target · ข้อมูลจาก TSM (สาขา WW)', 30, H-24);
     var a=document.createElement('a'); a.download='north_'+(bd.name==='เหนือบน'?'upper':'lower')+'_'+(G[0]==='18'?'iphone18series':'iphoneN-')+'_'+S.nd+'.png'; a.href=cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
   }
+  // generic: draw an on-screen table to a PNG (keeps green/red colours)
+  function tablePNG(title, subtitle, tbl, fname){
+    var grid=[], heads=[];
+    var take=function(tr, kind){ var row=[]; [].forEach.call(tr.children, function(c){ var cls=c.className||''; row.push({t:c.innerText.replace(/\s*\n\s*/g,'  ').replace(/[▼▲]/g,'').trim(), good:/good/.test(cls), bad:/bad/.test(cls), l:/(^|\s)l(\s|$)/.test(cls)||c.cellIndex===0}); }); grid.push({kind:kind,cells:row}); };
+    [].forEach.call(tbl.querySelectorAll('thead tr'), function(tr){ take(tr,'h'); });
+    [].forEach.call(tbl.querySelectorAll('tbody tr'), function(tr){ take(tr,'b'); });
+    [].forEach.call(tbl.querySelectorAll('tfoot tr'), function(tr){ take(tr,'f'); });
+    var F='"IBM Plex Sans Thai","Sarabun","Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif';
+    var meas=document.createElement('canvas').getContext('2d'), nc=Math.max.apply(null,grid.map(function(r){ return r.cells.length; }));
+    var wid=[]; for(var i=0;i<nc;i++) wid[i]=40;
+    grid.forEach(function(r){ meas.font=(r.kind==='b'?'':'700 ')+'15px '+F; r.cells.forEach(function(c,i){ wid[i]=Math.max(wid[i], meas.measureText(c.t).width+24); }); });
+    var pad=30, W=Math.max(700, wid.reduce(function(a,b){ return a+b; },0)+pad*2), rowH=32, top=96, H=top+rowH*grid.length+50, sc=2;
+    var cv=document.createElement('canvas'); cv.width=W*sc; cv.height=H*sc; var x=cv.getContext('2d'); x.scale(sc,sc);
+    x.fillStyle='#fff'; x.fillRect(0,0,W,H);
+    x.fillStyle='#1b1a18'; x.font='700 22px '+F; x.fillText(title,pad,42);
+    x.fillStyle='#6f6b64'; x.font='14px '+F; x.fillText(subtitle,pad,68);
+    grid.forEach(function(r,ri){
+      var y=top+rowH*ri+21;
+      if(r.kind==='b' && ri%2===0){ x.fillStyle='#faf9f6'; x.fillRect(pad,y-21,W-pad*2,rowH); }
+      if(r.kind==='f'){ x.strokeStyle='#cfcac0'; x.beginPath(); x.moveTo(pad,y-21); x.lineTo(W-pad,y-21); x.stroke(); }
+      var cx=pad;
+      r.cells.forEach(function(c,i){
+        x.font=(r.kind==='b'?'':'700 ')+(r.kind==='h'?'13px ':'15px ')+F;
+        x.fillStyle = r.kind==='h' ? '#6f6b64' : c.good ? '#1a7f37' : c.bad ? '#c62828' : '#1b1a18';
+        if(c.l){ x.textAlign='left'; x.fillText(c.t,cx+6,y); } else { x.textAlign='right'; x.fillText(c.t,cx+wid[i]-6,y); }
+        cx+=wid[i];
+      });
+      if(r.kind==='h'){ x.strokeStyle='#e6e3dc'; x.beginPath(); x.moveTo(pad,y+11); x.lineTo(W-pad,y+11); x.stroke(); }
+    });
+    x.textAlign='left'; x.fillStyle='#8a857d'; x.font='12px '+F; x.fillText('ข้อมูลจาก TSM (สาขา WW) · ยอดขายถึง '+D.updated,pad,H-20);
+    var a=document.createElement('a'); a.download=fname; a.href=cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
+  }
+  var scopeTxt=function(){ return [S.area||'ทุกพื้นที่', S.type||'ทุกประเภทสาขา', S.model?mLabel(S.model):'ทุกรุ่น'].join(' · '); };
+  $('png-area').onclick=function(){ tablePNG('ราย Area · เทียบ Target ศ.–อา. 20–22 พ.ย. ('+(S.tm==='n'?'Rev':'Qty')+')', scopeTxt()+' · ยอดขาย 20–22 พ.ย.', $('t-area'), 'iphone_area_'+(S.tm==='n'?'rev':'qty')+'_'+(D.last||'')+'.png'); };
+  $('png-shop').onclick=function(){ tablePNG('รายสาขา', scopeTxt()+' · '+(S.from===S.to?thDate(S.from):thDate(S.from)+' – '+thDate(S.to))+(S.q?' · ค้นหา "'+S.q+'"':''), $('t-shop'), 'iphone_shop_'+S.from+'_'+S.to+'.png'); };
+
   function showTab(tb){
     S.tab = tb==='north' && NT ? 'north' : 'main';
     [].forEach.call($('tabs').children, function(b){ b.className = b.dataset.t===S.tab ? 'on' : ''; b.onclick=function(){ showTab(b.dataset.t); try{ history.replaceState(null,'',b.dataset.t==='north'?'#north':location.pathname); }catch(e){} }; });
