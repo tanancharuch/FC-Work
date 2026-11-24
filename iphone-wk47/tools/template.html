@@ -399,10 +399,11 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
 
   // ---------- Tab: โฟกัสไอโฟน North ----------
   var NT = D.north;
-  var nDays = NT ? (function(){ var a=[], d=NT.from; while(d<=NT.to){ a.push(d); d=addDays(d,1); } return a; })() : [];
+  var nDays = NT ? (function(){ var a=[], d=NT.from, e=NT.to<D.last?NT.to:D.last; while(d<=e){ a.push(d); d=addDays(d,1); } return a; })() : [];
   S.ng = 'A';
   [].forEach.call(document.querySelectorAll('#ngrp button'), function(b){ b.onclick=function(){ S.ng=b.dataset.g; drawNorth(); }; });
-  S.nd = nDays.length ? (D.last>=NT.to ? NT.to : (D.last<NT.from ? NT.from : D.last)) : null;
+  S.nd = nDays.length ? nDays[nDays.length-1] : null;
+  var nPer = function(d){ return (NT.periods||[]).filter(function(p){ return d>=p.from && d<=p.to; })[0] || null; };
   var NG = {'18':['18','iPhone 18 Series','t18','d18','c18'], 'N':['N','iPhone N-','tn','dn','cn'], 'T':['T','รวมทั้งหมด','tt','dt','ct']};
   var nGroups = function(){ return S.ng==='A' ? [NG['18'],NG.N,NG.T] : [NG[S.ng]]; };
   function drawNorth(){
@@ -419,7 +420,8 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
       var rowsCum=R.filter(function(r){ return r.d>=NT.from && r.d<=S.nd && SH[r.s] && SH[r.s].a===bd.area; });
       var q=function(rows,shop,g){ return rows.reduce(function(s,r){ return s + ((r.s===shop && (g==='18'?TOP[r.m]:!TOP[r.m])) ? r.q : 0); },0); };
       var mk=function(c,n,t18,tn,extra){ var o={c:c,n:n,t18:t18,tn:tn,extra:extra, d18:q(rowsDay,c,'18'), dn:q(rowsDay,c,'N'), c18:q(rowsCum,c,'18'), cn:q(rowsCum,c,'N')}; o.tt=(t18==null&&tn==null)?null:(t18||0)+(tn||0); o.dt=o.d18+o.dn; o.ct=o.c18+o.cn; return o; };
-      var list=bd.shops.map(function(x){ return mk(x.c,x.n,x.t18,x.tn,false); });
+      var PER=nPer(S.nd);
+      var list=bd.shops.map(function(x){ var o=PER&&PER.t[x.c]; return o ? mk(x.c,x.n,o[0],o[1],false) : mk(x.c,x.n,x.t18,x.tn,false); });
       var extra={}; rowsCum.forEach(function(r){ if(!codes[r.s]) extra[r.s]=1; });
       var ex=Object.keys(extra).map(function(s){ return mk(s,SH[s].n,null,null,true); }).sort(function(a,b){ return b.ct-a.ct; });
       var rows=list.concat(ex), tot={t18:0,tn:0,tt:0,d18:0,dn:0,dt:0,c18:0,cn:0,ct:0};
@@ -456,7 +458,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
         [[fmt(T1)],[fmt(tot[G[3]])],[pct(A1),achCls(A1)]].forEach(function(v){ fr.appendChild(el('td',(g+' '+(v[1]||'')).trim(),v[0])); }); });
       tf.appendChild(fr); tb.appendChild(tf); tw.appendChild(tb); sec.appendChild(tw); box.appendChild(sec);
     });
-    $('n-foot').textContent = 'ที่มา: '+NT.label+' · ยอดขายจาก TSM (สาขา WW, iPhone บิล Payment) ถึง '+D.updated+' · iPhone 18 Series = 18 Pro Max + 18 Pro + Duo · iPhone N- = รุ่นอื่นทั้งหมด · รวมทั้งหมด = 18 Series + N- · ตัวเลขสีแดง = มี Target แต่ยังไม่มียอด · ช่อง "—" = ไม่มี Target ในรูป · สาขาที่ไม่มี Target แต่มียอดขายใน Area นับรวมในยอดรวมของกระดานด้วย';
+    $('n-foot').textContent = 'ที่มา: '+((nPer(S.nd)||{}).label||NT.label)+' · ยอดขายจาก TSM (สาขา WW, iPhone บิล Payment) ถึง '+D.updated+' · iPhone 18 Series = 18 Pro Max + 18 Pro + Duo · iPhone N- = รุ่นอื่นทั้งหมด · รวมทั้งหมด = 18 Series + N- · ตัวเลขสีแดง = มี Target แต่ยังไม่มียอด · ช่อง "—" = ไม่มี Target ในรูป · สาขาที่ไม่มี Target แต่มียอดขายใน Area นับรวมในยอดรวมของกระดานด้วย';
   }
   function northPNG(bd, GS, k, rows, tot){
     var sc=2, pad=30, nameW=300, colW=80, W=Math.max(820,pad*2+nameW+GS.length*3*colW+(GS.length-1)*0), rowH=32, cardH=52, top=96+cardH+30, H=top+rowH*(rows.length+3)+50;
