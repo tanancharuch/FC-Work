@@ -1,107 +1,334 @@
 {
- "label": "WK48 Top Down (Allocate) 23–30 พ.ย. · Qty",
- "by_area": {
-  "UPC - Central Northeast": {
-   "18": {
-    "q": 57
-   },
-   "N-": {
-    "q": 33
-   }
-  },
-  "UPC - Lower North": {
-   "18": {
-    "q": 46
-   },
-   "N-": {
-    "q": 25
-   }
-  },
-  "UPC - Lower Northeast": {
-   "18": {
-    "q": 102
-   },
-   "N-": {
-    "q": 57
-   }
-  },
-  "UPC - Upper North": {
-   "18": {
-    "q": 131
-   },
-   "N-": {
-    "q": 46
-   }
-  },
-  "UPC - Upper Northeast": {
-   "18": {
-    "q": 127
-   },
-   "N-": {
-    "q": 47
-   }
-  }
- },
+ "name": "WK48",
  "from": "2026-11-23",
  "to": "2026-11-30",
- "name": "WK48",
- "by_area_model": {
-  "UPC - Central Northeast": {
-   "18 Pro Max": 48,
-   "18 Pro": 9,
-   "Duo": 0,
-   "17 Pro Max": 11,
-   "17": 14,
-   "17 Pro": 6,
-   "17 Air": 0,
-   "15": 2
+ "sources": {
+  "td": {
+   "name": "Top Down",
+   "label": "WK48 Top Down 23–30 พ.ย. (Qty) · 15 Area รวม 3,750 · แยก 18 Series / N- ได้เฉพาะ 5 Area UPC I",
+   "by_area": {
+    "BMA I - North West": {
+     "T": {
+      "q": 484
+     }
+    },
+    "BMA II - South West": {
+     "T": {
+      "q": 366
+     }
+    },
+    "BMA III - North East": {
+     "T": {
+      "q": 446
+     }
+    },
+    "BMA IV - South East": {
+     "T": {
+      "q": 451
+     }
+    },
+    "BMA V - Central": {
+     "T": {
+      "q": 389
+     }
+    },
+    "UPC - Central Northeast": {
+     "T": {
+      "q": 90
+     },
+     "18": {
+      "q": 57
+     },
+     "N-": {
+      "q": 33
+     }
+    },
+    "UPC - Lower North": {
+     "T": {
+      "q": 71
+     },
+     "18": {
+      "q": 46
+     },
+     "N-": {
+      "q": 25
+     }
+    },
+    "UPC - Lower Northeast": {
+     "T": {
+      "q": 159
+     },
+     "18": {
+      "q": 102
+     },
+     "N-": {
+      "q": 57
+     }
+    },
+    "UPC - Upper North": {
+     "T": {
+      "q": 177
+     },
+     "18": {
+      "q": 131
+     },
+     "N-": {
+      "q": 46
+     }
+    },
+    "UPC - Upper Northeast": {
+     "T": {
+      "q": 174
+     },
+     "18": {
+      "q": 127
+     },
+     "N-": {
+      "q": 47
+     }
+    },
+    "UPC - Central": {
+     "T": {
+      "q": 139
+     }
+    },
+    "UPC - East": {
+     "T": {
+      "q": 298
+     }
+    },
+    "UPC - Lower South": {
+     "T": {
+      "q": 101
+     }
+    },
+    "UPC - Upper South": {
+     "T": {
+      "q": 225
+     }
+    },
+    "UPC - West": {
+     "T": {
+      "q": 180
+     }
+    }
+   },
+   "by_area_model": {
+    "UPC - Central Northeast": {
+     "18 Pro Max": 48,
+     "18 Pro": 9,
+     "Duo": 0,
+     "17 Pro Max": 11,
+     "17": 14,
+     "17 Pro": 6,
+     "17 Air": 0,
+     "15": 2
+    },
+    "UPC - Lower North": {
+     "18 Pro Max": 38,
+     "18 Pro": 6,
+     "Duo": 2,
+     "17 Pro Max": 6,
+     "17": 7,
+     "17 Pro": 7,
+     "17 Air": 0,
+     "15": 5
+    },
+    "UPC - Lower Northeast": {
+     "18 Pro Max": 84,
+     "18 Pro": 15,
+     "Duo": 3,
+     "17 Pro Max": 22,
+     "17": 16,
+     "17 Pro": 18,
+     "17 Air": 0,
+     "15": 1
+    },
+    "UPC - Upper North": {
+     "18 Pro Max": 92,
+     "18 Pro": 35,
+     "Duo": 4,
+     "17 Pro Max": 12,
+     "17": 16,
+     "17 Pro": 7,
+     "17 Air": 4,
+     "15": 7
+    },
+    "UPC - Upper Northeast": {
+     "18 Pro Max": 96,
+     "18 Pro": 28,
+     "Duo": 3,
+     "17 Pro Max": 11,
+     "17": 17,
+     "17 Pro": 15,
+     "17 Air": 1,
+     "15": 3
+    }
+   }
   },
-  "UPC - Lower North": {
-   "18 Pro Max": 38,
-   "18 Pro": 6,
-   "Duo": 2,
-   "17 Pro Max": 6,
-   "17": 7,
-   "17 Pro": 7,
-   "17 Air": 0,
-   "15": 5
-  },
-  "UPC - Lower Northeast": {
-   "18 Pro Max": 84,
-   "18 Pro": 15,
-   "Duo": 3,
-   "17 Pro Max": 22,
-   "17": 16,
-   "17 Pro": 18,
-   "17 Air": 0,
-   "15": 1
-  },
-  "UPC - Upper North": {
-   "18 Pro Max": 92,
-   "18 Pro": 35,
-   "Duo": 4,
-   "17 Pro Max": 12,
-   "17": 16,
-   "17 Pro": 7,
-   "17 Air": 4,
-   "15": 7
-  },
-  "UPC - Upper Northeast": {
-   "18 Pro Max": 96,
-   "18 Pro": 28,
-   "Duo": 3,
-   "17 Pro Max": 11,
-   "17": 17,
-   "17 Pro": 15,
-   "17 Air": 1,
-   "15": 3
+  "cm": {
+   "name": "Commit",
+   "label": "WK48 Commit 23–30 พ.ย. (Qty) · 15 Area รวม 3,339 · แยก 18 Series / N- ได้เฉพาะ 5 Area UPC I",
+   "by_area": {
+    "BMA I - North West": {
+     "T": {
+      "q": 431
+     }
+    },
+    "BMA II - South West": {
+     "T": {
+      "q": 326
+     }
+    },
+    "BMA III - North East": {
+     "T": {
+      "q": 397
+     }
+    },
+    "BMA IV - South East": {
+     "T": {
+      "q": 402
+     }
+    },
+    "BMA V - Central": {
+     "T": {
+      "q": 346
+     }
+    },
+    "UPC - Central Northeast": {
+     "T": {
+      "q": 80
+     },
+     "18": {
+      "q": 51
+     },
+     "N-": {
+      "q": 29
+     }
+    },
+    "UPC - Lower North": {
+     "T": {
+      "q": 63
+     },
+     "18": {
+      "q": 42
+     },
+     "N-": {
+      "q": 21
+     }
+    },
+    "UPC - Lower Northeast": {
+     "T": {
+      "q": 142
+     },
+     "18": {
+      "q": 91
+     },
+     "N-": {
+      "q": 51
+     }
+    },
+    "UPC - Upper North": {
+     "T": {
+      "q": 158
+     },
+     "18": {
+      "q": 117
+     },
+     "N-": {
+      "q": 41
+     }
+    },
+    "UPC - Upper Northeast": {
+     "T": {
+      "q": 155
+     },
+     "18": {
+      "q": 113
+     },
+     "N-": {
+      "q": 42
+     }
+    },
+    "UPC - Central": {
+     "T": {
+      "q": 124
+     }
+    },
+    "UPC - East": {
+     "T": {
+      "q": 265
+     }
+    },
+    "UPC - Lower South": {
+     "T": {
+      "q": 90
+     }
+    },
+    "UPC - Upper South": {
+     "T": {
+      "q": 200
+     }
+    },
+    "UPC - West": {
+     "T": {
+      "q": 160
+     }
+    }
+   },
+   "by_area_model": {
+    "UPC - Central Northeast": {
+     "18 Pro Max": 43,
+     "18 Pro": 8,
+     "Duo": 0,
+     "17 Pro Max": 10,
+     "17": 12,
+     "17 Pro": 5,
+     "17 Air": 0,
+     "15": 2
+    },
+    "UPC - Lower North": {
+     "18 Pro Max": 35,
+     "18 Pro": 5,
+     "Duo": 2,
+     "17 Pro Max": 5,
+     "17": 6,
+     "17 Pro": 6,
+     "17 Air": 0,
+     "15": 4
+    },
+    "UPC - Lower Northeast": {
+     "18 Pro Max": 75,
+     "18 Pro": 13,
+     "Duo": 3,
+     "17 Pro Max": 20,
+     "17": 14,
+     "17 Pro": 16,
+     "17 Air": 0,
+     "15": 1
+    },
+    "UPC - Upper North": {
+     "18 Pro Max": 82,
+     "18 Pro": 31,
+     "Duo": 4,
+     "17 Pro Max": 11,
+     "17": 14,
+     "17 Pro": 6,
+     "17 Air": 4,
+     "15": 6
+    },
+    "UPC - Upper Northeast": {
+     "18 Pro Max": 85,
+     "18 Pro": 25,
+     "Duo": 3,
+     "17 Pro Max": 10,
+     "17": 15,
+     "17 Pro": 13,
+     "17 Air": 1,
+     "15": 3
+    }
+   }
   }
  },
- "scope": [
-  "UPC - Central Northeast",
-  "UPC - Lower North",
-  "UPC - Lower Northeast",
-  "UPC - Upper North",
-  "UPC - Upper Northeast"
- ]
+ "label": "WK48 Top Down 23–30 พ.ย. (Qty) · 15 Area รวม 3,750 · แยก 18 Series / N- ได้เฉพาะ 5 Area UPC I"
 }

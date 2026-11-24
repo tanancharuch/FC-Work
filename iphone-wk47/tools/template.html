@@ -108,7 +108,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
       <span class="lbl">พื้นที่</span><select id="area"></select>
       <span class="lbl">ประเภทสาขา</span><select id="type"></select>
     </div>
-    <div class="row"><span class="lbl">Target</span><div class="seg" id="tmode"><button data-m="q">Qty</button><button data-m="n">Rev</button></div></div>
+    <div class="row"><span class="lbl">Target</span><div class="seg" id="tmode"><button data-m="q">Qty</button><button data-m="n">Rev</button></div><div class="seg" id="tsrc" style="margin-left:8px"></div></div>
     <div class="row"><span class="lbl">รุ่น</span><div id="chips" class="row" style="margin:0"></div></div>
   </div>
 
@@ -203,7 +203,11 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   var NM = 'N-', G18 = 'G18';
   var mOk = function(m){ return !S.model || (S.model===NM ? !TOP[m] : S.model===G18 ? !!TOP[m] : m===S.model); };
   var mLabel = function(m){ return m===NM ? 'iPhone N-' : m===G18 ? 'iPhone 18 Series' : 'iPhone '+m; };
-  var TG = (D.targets && D.targets.by_area) || {};
+  var TSRC = (D.targets && D.targets.sources) || null;
+  S.ts = TSRC ? Object.keys(TSRC)[0] : null;
+  var TG = TSRC ? TSRC[S.ts].by_area : ((D.targets && D.targets.by_area) || {});
+  var TGM_ = function(){ return TSRC ? (TSRC[S.ts].by_area_model||null) : ((D.targets&&D.targets.by_area_model)||null); };
+  var setTS = function(k){ S.ts=k; TG=TSRC[k].by_area; render(); };
   var MET = function(){ return S.tm==='n' ? 'n' : 'q'; };
   var tLabel = function(){ return S.tm==='n' ? 'Target Rev (฿)' : 'Target Qty (เครื่อง)'; };
   var TF = (D.targets && D.targets.from) || '2026-11-20', TTo = (D.targets && D.targets.to) || '2026-11-22';
@@ -213,11 +217,11 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   var tgt = function(area, model){
     if(S.type) return null;
     var keys = !model ? ['18','N-'] : model===G18 ? ['18'] : model===NM ? ['N-'] : null;
-    var TGM = (D.targets&&D.targets.by_area_model)||null;
+    var TGM = TGM_();
     if(!keys && !(TGM && MET()==='q' && Object.keys(TGM).some(function(a){ return model in TGM[a]; }))) return null;
     var list = area ? [area] : AREAS.filter(function(a){ return !S.area || a.area===S.area; }).map(function(a){ return a.area; });
     var s=0, any=false, miss=false, k=MET();
-    list.forEach(function(a){ if(!keys){ var v=TGM[a]?TGM[a][model]:null; if(v!=null){ s+=v; any=true; } else miss=true; return; } keys.forEach(function(g){ var v = TG[a] && TG[a][g] ? TG[a][g][k] : null; if(v!=null){ s+=v; any=true; } else miss=true; }); });
+    list.forEach(function(a){ if(!keys){ var v=TGM[a]?TGM[a][model]:null; if(v!=null){ s+=v; any=true; } else miss=true; return; } if(!model && TG[a] && !(TG[a]['18'] && TG[a]['N-']) && TG[a].T){ var w=TG[a].T[k]; if(w!=null){ s+=w; any=true; } else miss=true; return; } keys.forEach(function(g){ var v = TG[a] && TG[a][g] ? TG[a][g][k] : null; if(v!=null){ s+=v; any=true; } else miss=true; }); });
     if(area && miss) return null;
     if(!area && miss && any) window.__tPartial = true;
     return any ? s : null;
@@ -236,7 +240,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     var a=sum(groupRows), c=el('div','card mcard'+(S.model===key?' on':''));
     c.onclick=function(){ S.model = S.model===key ? '' : key; render(); };
     var h=el('div','m-h',title); h.appendChild(el('span',null,pct(totalQ?a.q/totalQ:0)+' ของเครื่องที่ขาย · '+desc)); c.appendChild(h);
-    var tt=tgt(null,key), ac=ach(actual(a),tt);
+    var tt=tgt(null,key), ac=ach(actual(sum(groupRows.filter(function(r){ return tgt(SH[r.s].a,key)!=null; }))),tt);
     var nn=el('div','m-n');
     [[fmtT(tt), S.tm==='n'?'Target Rev (฿)':'Target Qty'],[S.tm==='n'?fmt(a.n):fmt(a.q), S.tm==='n'?'ยอด Rev (฿)':'ยอด Qty'],[pct(ac),'%ACH'],[S.tm==='n'?fmt(a.q):fmt(a.n), S.tm==='n'?'ยอด Qty':'ยอด Rev (฿)']]
       .forEach(function(x){ var d=el('div'); d.appendChild(el('b',x[1]==='%ACH'?achCls(ac):null,x[0])); d.appendChild(el('small',null,x[1])); nn.appendChild(d); });
@@ -253,6 +257,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     [].forEach.call($('presets').children, function(b,i){ var r=presets[i][1](); b.className=(r[0]===S.from&&r[1]===S.to)?'on':''; });
     [].forEach.call(document.querySelectorAll('#tmode button, .tmode2 button'), function(b){ b.className = b.dataset.m===MET() ? 'on' : ''; });
     window.__tPartial = false;
+    if(TSRC){ var ts=$('tsrc'); ts.replaceChildren(); Object.keys(TSRC).forEach(function(k){ var b=el('button',k===S.ts?'on':null,TSRC[k].name); b.onclick=function(){ setTS(k); }; ts.appendChild(b); }); }
     var base = R.filter(function(r){ return r.d>=S.from && r.d<=S.to && shopOk(r.s); });
     var tBase = R.filter(function(r){ return r.d>=TF && r.d<=TTo && shopOk(r.s); });
     var tBaseT = tBase.filter(function(r){ return !!TG[SH[r.s].a]; });
@@ -266,7 +271,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     var T=sum(rows), nd=Object.keys(T.days).length;
     var allShops = Object.keys(SH).filter(shopOk).length;
     var rangeTxt = S.from===S.to ? thDate(S.from) : thDate(S.from)+' – '+thDate(S.to);
-    var TA = sum(tRows), TT = tgt(null, S.model), A = ach(actual(TA), TT);
+    var TA = sum(tRows.filter(function(r){ return tgt(SH[r.s].a, S.model)!=null; })), TT = tgt(null, S.model), A = ach(actual(TA), TT);
     var tsub = TT==null ? (S.type ? 'ไม่มี Target แยกตามประเภทสาขา' : 'มี Target เฉพาะ iPhone 18 Series และ iPhone N-') : (window.__tPartial ? 'บาง Area ยังไม่มี Target' : 'Target '+TP());
     var k=[[tLabel(),fmtT(TT),tsub],[S.tm==='n'?'ยอด Rev ช่วง Target (฿)':'ยอด Qty ช่วง Target',S.tm==='n'?fmt(TA.n):fmt(TA.q),TP()+(S.model?' · '+mLabel(S.model):'')],['%ACH',pct(A),TT?(TP()+' เทียบ Target '+(S.tm==='n'?'Rev':'Qty')):'—'],['ยอด QTY',fmt(T.q),rangeTxt+(S.model?' · '+mLabel(S.model):'')],['ยอดขายสะสม (฿)',fmt(T.n),'ยอดขายสุทธิ หลังส่วนลด'],
       ['ราคาเต็ม (Gross)',fmt(T.g)+' ฿',T.q?'ส่วนลดเฉลี่ย '+fmt((T.g-T.n)/T.q)+' ฿/เครื่อง':''],['Net/เครื่อง (฿)',T.q?fmt(T.n/T.q):'—','ราคาสุทธิเฉลี่ย'],
@@ -279,7 +284,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     cards.push(groupCard(G18,'iPhone 18 Series',TP()+' · 18 Pro Max · 18 Pro · Duo',g18,TB.q));
     cards.push(groupCard(NM,'iPhone N-',TP()+' · รุ่นอื่นทั้งหมด',gn,TB.q));
     $('models').replaceChildren.apply($('models'), cards);
-    $('tnote').textContent = 'Target = '+((D.targets&&D.targets.label)||'—')+' · มี Target 2 กลุ่ม: iPhone 18 Series (18 Pro Max + 18 Pro + Duo) และ iPhone N- · Target, %ACH และการ์ดรุ่นเทียบเฉพาะยอดวันที่ '+TP()+' ส่วนอื่นของหน้าเป็นไปตามช่วงวันที่ที่เลือก'+(window.__tPartial?' · บาง Area ยังไม่มี Target ในบางกลุ่ม จึงไม่นับรวม':'');
+    $('tnote').textContent = 'Target = '+((TSRC?TSRC[S.ts].label:(D.targets&&D.targets.label))||'—')+' · มี Target 2 กลุ่ม: iPhone 18 Series (18 Pro Max + 18 Pro + Duo) และ iPhone N- · Target, %ACH และการ์ดรุ่นเทียบเฉพาะยอดวันที่ '+TP()+' ส่วนอื่นของหน้าเป็นไปตามช่วงวันที่ที่เลือก'+(window.__tPartial?' · บาง Area ยังไม่มี Target ในบางกลุ่ม จึงไม่นับรวม':'');
     drawAreas(); drawShops(); drawDetail(); drawDays(); drawHours();
   }
 
@@ -306,7 +311,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
       var s18=sum(ar.filter(function(r){ return TOP[r.m]; })), sn=sum(ar.filter(function(r){ return !TOP[r.m]; }));
       var st=sum(S.model ? ar.filter(function(r){ return mOk(r.m); }) : ar);
       var t18=tgt(a.area,G18), tn=tgt(a.area,NM);
-      var tt = !S.model ? ((t18!=null&&tn!=null)?t18+tn:null) : tgt(a.area,S.model);
+      var tt = tgt(a.area,S.model);
       return {area:a.area, t18:t18, v18:s18[M], a18:ach(s18[M],t18), tn:tn, vn:sn[M], an:ach(sn[M],tn), tt:tt, vt:st[M], at:ach(st[M],tt), oth:st[O], sold:Object.keys(st.shops).length, all:tot[a.area]||0};
     });
   }
