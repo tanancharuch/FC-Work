@@ -272,7 +272,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     var allShops = Object.keys(SH).filter(shopOk).length;
     var rangeTxt = S.from===S.to ? thDate(S.from) : thDate(S.from)+' – '+thDate(S.to);
     var TA = sum(tRows.filter(function(r){ return tgt(SH[r.s].a, S.model)!=null; })), TT = tgt(null, S.model), A = ach(actual(TA), TT);
-    var tsub = TT==null ? (S.type ? 'ไม่มี Target แยกตามประเภทสาขา' : 'มี Target เฉพาะ iPhone 18 Series และ iPhone N-') : (window.__tPartial ? 'บาง Area ยังไม่มี Target' : 'Target '+TP());
+    var tsub = TT==null ? (S.type ? 'ไม่มี Target แยกตามประเภทสาขา' : 'Target มีเฉพาะยอดรวมทุกรุ่น') : (window.__tPartial ? 'บาง Area ยังไม่มี Target' : 'Target '+TP());
     var k=[[tLabel(),fmtT(TT),tsub],[S.tm==='n'?'ยอด Rev ช่วง Target (฿)':'ยอด Qty ช่วง Target',S.tm==='n'?fmt(TA.n):fmt(TA.q),TP()+(S.model?' · '+mLabel(S.model):'')],['%ACH',pct(A),TT?(TP()+' เทียบ Target '+(S.tm==='n'?'Rev':'Qty')):'—'],['ยอด QTY',fmt(T.q),rangeTxt+(S.model?' · '+mLabel(S.model):'')],['ยอดขายสะสม (฿)',fmt(T.n),'ยอดขายสุทธิ หลังส่วนลด'],
       ['ราคาเต็ม (Gross)',fmt(T.g)+' ฿',T.q?'ส่วนลดเฉลี่ย '+fmt((T.g-T.n)/T.q)+' ฿/เครื่อง':''],['Net/เครื่อง (฿)',T.q?fmt(T.n/T.q):'—','ราคาสุทธิเฉลี่ย'],
       ['เฉลี่ยต่อวัน',nd?(T.q/nd).toFixed(1):'—','เครื่อง · '+nd+' วันที่มียอด'],['สาขาที่ขายได้',fmt(Object.keys(T.shops).length),'จาก '+allShops+' สาขา WW']];
@@ -284,7 +284,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     cards.push(groupCard(G18,'iPhone 18 Series',TP()+' · 18 Pro Max · 18 Pro · Duo',g18,TB.q));
     cards.push(groupCard(NM,'iPhone N-',TP()+' · รุ่นอื่นทั้งหมด',gn,TB.q));
     $('models').replaceChildren.apply($('models'), cards);
-    $('tnote').textContent = 'Target = '+((TSRC?TSRC[S.ts].label:(D.targets&&D.targets.label))||'—')+' · มี Target 2 กลุ่ม: iPhone 18 Series (18 Pro Max + 18 Pro + Duo) และ iPhone N- · Target, %ACH และการ์ดรุ่นเทียบเฉพาะยอดวันที่ '+TP()+' ส่วนอื่นของหน้าเป็นไปตามช่วงวันที่ที่เลือก'+(window.__tPartial?' · บาง Area ยังไม่มี Target ในบางกลุ่ม จึงไม่นับรวม':'');
+    $('tnote').textContent = 'Target = '+((TSRC?TSRC[S.ts].label:(D.targets&&D.targets.label))||'—')+' · Target เป็นยอดรวมทุกรุ่นราย Area (ไม่แยก 18 Series / N-) · Target, %ACH และการ์ดรุ่นเทียบเฉพาะยอดวันที่ '+TP()+' ส่วนอื่นของหน้าเป็นไปตามช่วงวันที่ที่เลือก'+(window.__tPartial?' · บาง Area ยังไม่มี Target ในบางกลุ่ม จึงไม่นับรวม':'');
     drawAreas(); drawShops(); drawDetail(); drawDays(); drawHours();
   }
 
@@ -322,7 +322,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     return AREA_COLS().map(function(c){ var v=C[c[0]]; return [v[0], ((v[1]||'')+' '+grp(c[0])).trim()]; });
   }
   function drawAreas(){
-    var lab = S.model ? mLabel(S.model) : 'iPhone 18 Series และ iPhone N-';
+    var lab = S.model ? mLabel(S.model) : 'ยอดรวมทุกรุ่น';
     var hasT = !S.model || S.model===G18 || S.model===NM || tgt(null,S.model)!=null;
     $('area-h').textContent='ราย Area · เทียบ Target '+TP();
     $('area-p').textContent = (S.tm==='n'?'Rev (฿) · ':'Qty (เครื่อง) · ')+'ยอดขายวันที่ '+TP()+' · '+(hasT?'เทียบ Target ':'ไม่มี Target รายรุ่นนี้ · ')+lab+(S.type?' · ไม่มี Target แยกตามประเภทสาขา':'');
