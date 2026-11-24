@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suplife Power Bank – Sales Tracker 21–30 Nov 2026</title>
+<style>
+:root{--blue:#3d7cc9;--orange:#f2994a;--fg:#1d2733;--muted:#6b7785;--line:#e3e7ec;--panel:#ffffff;--bg:#f4f7fb;--ok:#1a7f37;--warn:#b26b00;--bad:#c62828}
+@media (prefers-color-scheme: dark){:root{--fg:#e7ecf2;--muted:#9aa6b4;--line:#2c3540;--panel:#161c23;--bg:#0f1419;--ok:#4cc267;--warn:#e0a03a;--bad:#ef6a6a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Sarabun","Noto Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px}
+.wrap{max-width:1400px;margin:0 auto;padding:24px 20px 48px;display:flex;flex-direction:column;gap:24px}
+h1{margin:0;color:var(--blue);font-size:26px;font-weight:600}
+.asof{color:var(--muted);margin:6px 0 0;font-size:13px}
+.lead{margin:0;line-height:1.7;max-width:80ch}
+.lead b{font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tab{font:inherit;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;padding:8px 14px;color:var(--muted);cursor:pointer}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+.panel{display:flex;flex-direction:column;gap:24px}
+.panel[hidden]{display:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-top:3px solid color-mix(in srgb,var(--blue) 55%,transparent);border-radius:10px;padding:16px;min-width:0}
+.k-label{font-size:12px;color:var(--muted)}
+.k-val{font-size:30px;color:var(--blue);font-variant-numeric:tabular-nums;margin:4px 0;line-height:1.2}
+.k-sub{font-size:12px;color:var(--muted)}
+.ok{color:var(--ok)!important}.warn{color:var(--warn)!important}.bad{color:var(--bad)!important}
+h2{font-size:17px;font-weight:600;margin:0 0 4px;color:color-mix(in srgb,var(--blue) 70%,var(--fg))}
+.note{font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.6}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:16px}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-size:12px;fill:var(--muted)}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.12);border-radius:6px;padding:6px 8px;font-size:12px;white-space:nowrap;opacity:0}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+thead th{background:color-mix(in srgb,var(--blue) 10%,transparent);font-weight:600;font-size:12px;vertical-align:bottom}
+tfoot td,tr.tot td{font-weight:600;background:color-mix(in srgb,var(--blue) 6%,transparent);border-top:2px solid var(--line)}
+.l{text-align:left}.mut{color:var(--muted)}
+th.day,td.day{background:color-mix(in srgb,var(--orange) 8%,transparent)}
+th.day.alt,td.day.alt{background:color-mix(in srgb,var(--orange) 17%,transparent)}
+.sep{border-left:1px solid var(--line)}
+.sort{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer;font-weight:600;white-space:nowrap}
+.sort i{font-style:normal;color:var(--blue);font-size:10px;margin-left:3px}
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.big{font-size:44px;line-height:1.1;margin:6px 0;font-variant-numeric:tabular-nums}
+.track{position:relative;height:10px;border-radius:5px;background:var(--line)}
+.fill{height:100%;border-radius:5px;background:var(--blue)}
+.rr{position:absolute;top:-4px;width:2px;height:18px;background:var(--fg)}
+.cap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--muted);margin:6px 0 12px}
+dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px 16px;margin:0}
+dt{font-size:12px;color:var(--muted)}dd{margin:0;font-size:18px;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-bottom:8px}
+.legend span span{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+.exp{float:right;display:flex;gap:8px;margin:0 0 8px 12px}
+.ebtn{font:inherit;font-size:13px;padding:6px 12px;border-radius:8px;border:1px solid color-mix(in srgb,var(--blue) 45%,transparent);background:var(--panel);color:var(--blue);cursor:pointer}
+details summary{cursor:pointer;color:var(--muted)}
+details ul{line-height:1.7}
+footer{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Suplife Power Bank · ติดตามยอดขาย 21–30 พ.ย. 2026</h1>
+<p class="asof" id="asof"></p>
+</header>
+<nav class="tabs"><button class="tab on" data-tab="overview">ภาพรวมทั้งประเทศ</button><button class="tab" data-tab="north">Focus North</button></nav>
+
+<section class="panel" id="overview">
+<p class="lead" id="lead"></p>
+<div class="kpis" id="kpis"></div>
+<div class="two">
+<div class="card"><h2>ยอดขายรวมรายวัน 21–30 พ.ย.</h2><p class="note">เส้นประ = ยอดเฉลี่ยต่อวันที่ต้องทำเพื่อปิดเป้า · ช่องว่าง = ยังไม่มีข้อมูล</p><div class="chart" id="c-daily"></div></div>
+<div class="card"><h2>% Achieve รายเขต</h2><p class="note">RR ÷ เป้า · เขียว ≥ 80% · ส้ม 50–79% · แดง &lt; 50%</p><div class="chart" id="c-ach"></div></div>
+</div>
+<div class="card" id="area-card">
+<div class="exp" data-t="t-area" data-f="suplife_area"><button class="ebtn" data-k="png">Download PNG</button><button class="ebtn" data-k="csv">Export CSV</button></div>
+<h2>Area · ยอดขาย Suplife Power Bank</h2><p class="note">ยอดขายรายวัน (ชิ้น) ช่วงแคมเปญ และตัวชี้วัดเดือน พ.ย. ต่อเขต</p>
+<div class="tw"><table id="t-area"></table></div>
+</div>
+<details><summary>วิธีคำนวณและหมายเหตุ</summary><ul>
+<li>MTD = ยอดก่อน 21 พ.ย. + ยอดรายวันตั้งแต่ 21 พ.ย.</li>
+<li>RR (Run Rate) = MTD ÷ จำนวนวันที่ผ่านไป × 30 (นับถึงวันล่าสุดที่มีข้อมูล)</li>
+<li>Gap = เป้า − MTD · % Achieve = RR ÷ เป้า · ต้องขายต่อวัน = Gap ÷ วันที่เหลือถึง 30 พ.ย.</li>
+</ul></details>
+</section>
+
+<section class="panel" id="north" hidden>
+<div><h2>Focus North · เหนือบน vs เหนือล่าง</h2><p class="lead" id="n-lead"></p></div>
+<div class="board" id="n-board"></div>
+<div class="card" id="shops-un"></div>
+<div class="card" id="shops-ln"></div>
+<div class="card"><h2>ยอดขายรายวัน เหนือบน vs เหนือล่าง</h2><div class="legend"><span><span style="background:var(--blue)"></span>เหนือบน</span><span><span style="background:var(--orange)"></span>เหนือล่าง</span></div><div class="chart" id="c-north"></div></div>
+</section>
+<footer>ภาพนิ่งของแดชบอร์ด ณ วันที่สร้าง · ยอดสาขาจากไฟล์ยอดขายรายบิล (SUPLIFE PWB/PB, สถานะ Payment)</footer>
+</div>
+
+<script>
+const DATA = {"asof": "2026-11-24", "asof_note": "ยอดวันที่ 24 พ.ย.: Upper/Lower North ถึง 15:53 น., เขตอื่นถึง 12:00 น.", "areas": [{"code": "bma1", "area": "BMA I - North West", "target": 1054, "before21": 242, "stock": 5069, "days": [83, 124, 45, 3]}, {"code": "bma2", "area": "BMA II - South West", "target": 614, "before21": 112, "stock": 2667, "days": [37, 33, 20, 2]}, {"code": "bma3", "area": "BMA III - North East", "target": 480, "before21": 66, "stock": 3659, "days": [43, 54, 10, 0]}, {"code": "bma4", "area": "BMA IV - South East", "target": 576, "before21": 127, "stock": 3676, "days": [49, 92, 27, 2]}, {"code": "bma5", "area": "BMA V - Central", "target": 976, "before21": 128, "stock": 5658, "days": [17, 24, 22, 2]}, {"code": "upc_c", "area": "UPC - Central", "target": 622, "before21": 195, "stock": 3604, "days": [38, 30, 8, 3]}, {"code": "upc_cne", "area": "UPC - Central Northeast", "target": 604, "before21": 308, "stock": 5557, "days": [24, 53, 25, 9]}, {"code": "upc_e", "area": "UPC - East", "target": 694, "before21": 287, "stock": 3561, "days": [26, 48, 27, 10]}, {"code": "upc_ln", "area": "UPC - Lower North", "target": 288, "before21": 86, "stock": 2876, "days": [23, 31, 12, 7]}, {"code": "upc_lne", "area": "UPC - Lower Northeast", "target": 1110, "before21": 224, "stock": 9105, "days": [79, 77, 53, 12]}, {"code": "upc_ls", "area": "UPC - Lower South", "target": 308, "before21": 87, "stock": 2576, "days": [22, 32, 9, 0]}, {"code": "upc_un", "area": "UPC - Upper North", "target": 690, "before21": 110, "stock": 4450, "days": [38, 31, 20, 9]}, {"code": "upc_une", "area": "UPC - Upper Northeast", "target": 816, "before21": 153, "stock": 8469, "days": [61, 55, 34, 8]}, {"code": "upc_us", "area": "UPC - Upper South", "target": 598, "before21": 94, "stock": 4634, "days": [21, 38, 27, 1]}, {"code": "upc_w", "area": "UPC - West", "target": 570, "before21": 127, "stock": 4633, "days": [24, 30, 12, 2]}], "shops": [{"code": "80101067", "name": "True Shop Central Airport Plaza Chiangmai", "area": "upc_un", "order": 0, "target_day": 6, "before21": 17, "days": [5, 5, 3, 0]}, {"code": "80100621", "name": "True Shop Central Chiangrai", "area": "upc_un", "order": 1, "target_day": 6, "before21": 6, "days": [6, 2, 3, 0]}, {"code": "80101117", "name": "True Shop Central Lampang", "area": "upc_un", "order": 2, "target_day": 6, "before21": 21, "days": [4, 4, 2, 1]}, {"code": "80100486", "name": "True Shop Central Festival Chiangmai", "area": "upc_un", "order": 3, "target_day": 6, "before21": 8, "days": [7, 4, 3, 3]}, {"code": "80101263", "name": "True Shop Maya Chiangmai", "area": "upc_un", "order": 4, "target_day": 4, "before21": 2, "days": [2, 5, 1, 1]}, {"code": "80101281", "name": "True Shop Big C Chiangmai", "area": "upc_un", "order": 5, "target_day": 4, "before21": 9, "days": [3, 3, 1, 0]}, {"code": "80100750", "name": "True Shop Lotus's Fang Chiangmai", "area": "upc_un", "order": 6, "target_day": 4, "before21": 6, "days": [2, 0, 0, 1]}, {"code": "80101655", "name": "True Shop Lotus's Fang Chiangmai (D)", "area": "upc_un", "order": 7, "target_day": 2, "before21": 4, "days": [1, 0, 0, 0]}, {"code": "80100858", "name": "True Shop Mini Mae Sai ChiangRai", "area": "upc_un", "order": 8, "target_day": 4, "before21": 5, "days": [2, 2, 2, 1]}, {"code": "80100754", "name": "True Shop Lotus's Ruamchok Chiangmai", "area": "upc_un", "order": 9, "target_day": 4, "before21": 4, "days": [4, 2, 4, 0]}, {"code": "80101670", "name": "True Shop Lotus's Ruam Choke (D)", "area": "upc_un", "order": 10, "target_day": 2, "before21": 16, "days": [0, 1, 1, 1]}, {"code": "80100804", "name": "True Shop Lotus's Jomthong Chiangmai", "area": "upc_un", "order": 11, "target_day": 2, "before21": 3, "days": [1, 1, 0, 0]}, {"code": "80101013", "name": "True Shop Mini Mueang Maehongson", "area": "upc_un", "order": 12, "target_day": 2, "before21": 3, "days": [0, 2, 0, 1]}, {"code": "80101661", "name": "True Shop Lotus's Chom Thong (D)", "area": "upc_un", "order": 13, "target_day": 2, "before21": 2, "days": [0, 0, 0, 0]}, {"code": "80100849", "name": "True Shop Mini Mueang Phayao", "area": "upc_un", "order": 14, "target_day": 2, "before21": 0, "days": [0, 0, 0, 0]}, {"code": "80100792", "name": "True Shop Lotus's Phayao", "area": "upc_un", "order": 15, "target_day": 2, "before21": 2, "days": [1, 0, 0, 0]}, {"code": "80100798", "name": "True Shop Lotus's Chiangkham Phayao", "area": "upc_un", "order": 16, "target_day": 2, "before21": 2, "days": [0, 0, 0, 0]}, {"code": "80101198", "name": "True Shop Central Phitsanulok", "area": "upc_ln", "order": 0, "target_day": 6, "before21": 3, "days": [5, 6, 3, 1]}, {"code": "80101306", "name": "True Shop Robinson Mae Sot", "area": "upc_ln", "order": 1, "target_day": 4, "before21": 4, "days": [2, 6, 2, 1]}, {"code": "80101308", "name": "True Shop Robinson Khamphaengphet", "area": "upc_ln", "order": 2, "target_day": 4, "before21": 8, "days": [1, 3, 0, 0]}, {"code": "80100782", "name": "True Shop Lotus's Thaluang Phichit", "area": "upc_ln", "order": 3, "target_day": 4, "before21": 39, "days": [4, 5, 4, 1]}, {"code": "80100854", "name": "True Shop Mini Lomsak Phetchabun", "area": "upc_ln", "order": 4, "target_day": 4, "before21": 15, "days": [1, 2, 1, 3]}, {"code": "80101659", "name": "True Shop Robinson Mae Sot (D)", "area": "upc_ln", "order": 5, "target_day": 2, "before21": 2, "days": [1, 1, 1, 1]}, {"code": "80101704", "name": "True Shop Central Plaza Phitsanulok (D)", "area": "upc_ln", "order": 6, "target_day": 5, "before21": 6, "days": [5, 7, 1, 0]}, {"code": "80100865", "name": "True Shop Taphan Hin Phichit", "area": "upc_ln", "order": 7, "target_day": 4, "before21": 1, "days": [1, 0, 0, 0]}, {"code": "80101658", "name": "True Shop Lotus's Lomsak (D)", "area": "upc_ln", "order": 8, "target_day": 2, "before21": 6, "days": [2, 1, 0, 0]}, {"code": "80101665", "name": "True Shop Salokbat Kamphaengphet (D)", "area": "upc_ln", "order": 9, "target_day": 2, "before21": 0, "days": [1, 0, 0, 0]}, {"code": "80101656", "name": "True Shop Lotus's Pitsanulok (D)", "area": "upc_ln", "order": 10, "target_day": 2, "before21": 2, "days": [0, 0, 0, 0]}]};
+const n0 = (v) => v == null ? '–' : Number(v).toLocaleString('en-US');
+const band = (a) => a >= 80 ? 'ok' : a >= 50 ? 'warn' : 'bad';
+const bandC = (a) => a >= 80 ? 'var(--ok)' : a >= 50 ? 'var(--warn)' : 'var(--bad)';
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const DAYS = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
+const lastDay = 20 + Math.max(...DATA.areas.map((a) => a.days.length));
+const rem = 30 - lastDay;
+const TH = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+
+const areas = DATA.areas.map((a) => {
+  const camp = a.days.reduce((s, v) => s + v, 0);
+  const mtd = a.before21 + camp, rr = Math.round(mtd * 30 / lastDay);
+  return { ...a, campaign: camp, mtd, rr, gap: a.target - mtd, achieve: Math.round(rr / a.target * 100), need: rem > 0 ? Math.max(0, Math.ceil((a.target - mtd) / rem)) : null };
+});
+const sum = (arr, k) => arr.reduce((s, r) => s + (r[k] || 0), 0);
+const T = { mtd: sum(areas, 'mtd'), target: sum(areas, 'target'), before21: sum(areas, 'before21'), stock: sum(areas, 'stock'), campaign: sum(areas, 'campaign') };
+T.rr = Math.round(T.mtd * 30 / lastDay); T.gap = T.target - T.mtd; T.achieve = Math.round(T.rr / T.target * 100); T.need = rem > 0 ? Math.ceil(T.gap / rem) : null;
+const byDay = DAYS.map((d, i) => { const vals = areas.map((a) => a.days[i]).filter((v) => v != null); return { day: d, units: vals.length ? vals.reduce((s, v) => s + v, 0) : null }; });
+
+document.getElementById('asof').textContent = `ข้อมูลถึง ${lastDay} ${TH[10]} 2026 · ${DATA.asof_note}`;
+const ranked = [...areas].sort((a, b) => b.achieve - a.achieve);
+document.getElementById('lead').innerHTML = `ยอดขายสะสมเดือน พ.ย. (MTD) <b>${n0(T.mtd)}</b> ชิ้น คาดการณ์สิ้นเดือน (RR) <b>${n0(T.rr)}</b> ชิ้น คิดเป็น <b class="${band(T.achieve)}">${T.achieve}%</b> ของเป้า <b>${n0(T.target)}</b> ชิ้น ต้องขายเฉลี่ยวันละ <b>${n0(T.need)}</b> ชิ้นในอีก <b>${rem}</b> วัน เขตที่ % Achieve สูงสุดคือ <b>${esc(ranked[0].area)}</b> (${ranked[0].achieve}%) ต่ำสุดคือ <b>${esc(ranked[ranked.length - 1].area)}</b> (${ranked[ranked.length - 1].achieve}%)`;
+const kp = [['ยอดขายสะสม พ.ย. (MTD)', n0(T.mtd), `ช่วง 21 พ.ย.–ปัจจุบัน ${n0(T.campaign)} ชิ้น`], ['คาดการณ์สิ้นเดือน (RR)', n0(T.rr), `MTD ÷ ${lastDay} วัน × 30`], ['% Achieve (RR ÷ เป้า)', `<span class="${band(T.achieve)}">${T.achieve}%</span>`, `เป้า พ.ย. ${n0(T.target)} ชิ้น`], ['Gap ถึงเป้า (เป้า − MTD)', n0(T.gap), 'ชิ้นที่ยังต้องขาย'], ['ต้องขายเฉลี่ยต่อวัน', n0(T.need), `อีก ${rem} วันถึง 30 พ.ย.`], ['สต็อกคงเหลือรวม', n0(T.stock), 'ชิ้น ณ 24 พ.ย.']];
+document.getElementById('kpis').innerHTML = kp.map(([l, v, s]) => `<div class="card"><div class="k-label">${l}</div><div class="k-val">${v}</div><div class="k-sub">${s}</div></div>`).join('');
+
+function tipOn(box, ev, text) { const t = box.querySelector('.tip'); const r = box.getBoundingClientRect(); t.textContent = text; t.style.opacity = 1; const x = ev.clientX - r.left, y = ev.clientY - r.top; t.style.left = Math.max(0, Math.min(x - t.offsetWidth / 2, box.clientWidth - t.offsetWidth)) + 'px'; t.style.top = Math.max(0, y - 40) + 'px'; }
+function tipOff(box) { box.querySelector('.tip').style.opacity = 0; }
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v || 1))); return Math.ceil(v / p * 1.15) * p; }
+function bars(el, series, opts) {
+  const W = opts.W || 640, H = opts.H || 260, m = { t: 18, r: 8, b: 26, l: 44 };
+  const max = niceMax(Math.max(opts.ref || 0, ...series.flatMap((s) => s.values.map((v) => v || 0))));
+  const y = (v) => H - m.b - (v / max) * (H - m.t - m.b);
+  const step = (W - m.l - m.r) / DAYS.length, bw = step * 0.72 / series.length;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.label}">`;
+  const nt = max % 4 === 0 ? 4 : 5; for (let k = 0; k <= nt; k++) { const v = max * k / nt; s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${m.l - 6}" y="${y(v)}" dy=".32em" text-anchor="end">${n0(Math.round(v))}</text>`; }
+  DAYS.forEach((d, i) => {
+    const x0 = m.l + i * step + step * 0.14;
+    s += `<text x="${m.l + i * step + step / 2}" y="${H - 8}" text-anchor="middle">${d}</text>`;
+    if (series.every((se) => se.values[i] == null)) s += `<rect x="${x0}" y="${m.t}" width="${step * 0.72}" height="${H - m.b - m.t}" rx="3" fill="none" stroke="var(--line)" stroke-dasharray="3 3"/>`;
+    series.forEach((se, j) => { const v = se.values[i]; if (v == null) return; const x = x0 + j * bw; s += `<rect x="${x}" y="${y(v)}" width="${bw - 2}" height="${y(0) - y(v)}" rx="2" fill="${se.color}"/>`; if (bw > 14) s += `<text x="${x + bw / 2 - 1}" y="${y(v) - 4}" text-anchor="middle" style="fill:var(--fg);font-size:${series.length > 1 ? 10 : 12}px">${n0(v)}</text>`; });
+    s += `<rect class="hit" data-i="${i}" x="${m.l + i * step}" y="${m.t}" width="${step}" height="${H - m.t - m.b}" fill="transparent"/>`;
+  });
+  if (opts.ref) s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(opts.ref)}" y2="${y(opts.ref)}" stroke="var(--muted)" stroke-dasharray="5 4"/><text x="${W - m.r}" y="${y(opts.ref) - 6}" text-anchor="end">ต้องการ ${n0(opts.ref)}/วัน</text>`;
+  el.innerHTML = s + '</svg><div class="tip"></div>';
+  el.querySelectorAll('.hit').forEach((h) => { h.addEventListener('pointermove', (ev) => { const i = +h.dataset.i; tipOn(el, ev, `${DAYS[i]} พ.ย. · ` + series.map((se) => `${se.name} ${se.values[i] == null ? 'ยังไม่มีข้อมูล' : n0(se.values[i])}`).join(' · ')); }); h.addEventListener('pointerleave', () => tipOff(el)); });
+}
+bars(document.getElementById('c-daily'), [{ name: 'รวม', color: 'var(--orange)', values: byDay.map((d) => d.units) }], { ref: T.need, label: 'ยอดขายรวมรายวัน' });
+
+(function () {
+  const el = document.getElementById('c-ach');
+  const rows = [...areas].sort((a, b) => b.achieve - a.achieve);
+  const W = 640, rowH = 24, m = { t: 22, r: 44, b: 4, l: 170 }, H = m.t + rows.length * rowH + m.b;
+  const max = Math.max(100, ...rows.map((r) => r.achieve)), x = (v) => m.l + v / max * (W - m.l - m.r);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="% Achieve รายเขต">`;
+  rows.forEach((r, i) => { const yy = m.t + i * rowH; s += `<text x="${m.l - 6}" y="${yy + rowH / 2}" dy=".32em" text-anchor="end">${esc(r.area)}</text><rect x="${m.l}" y="${yy + 4}" width="${x(r.achieve) - m.l}" height="${rowH - 8}" rx="2" fill="var(--blue)"/><text x="${x(r.achieve) + 4}" y="${yy + rowH / 2}" dy=".32em" style="fill:${bandC(r.achieve)};font-weight:600">${r.achieve}%</text><rect class="hit" data-i="${i}" x="0" y="${yy}" width="${W}" height="${rowH}" fill="transparent"/>`; });
+  s += `<line x1="${x(100)}" x2="${x(100)}" y1="${m.t - 4}" y2="${H}" stroke="var(--muted)" stroke-dasharray="4 3"/><text x="${x(100)}" y="${m.t - 8}" text-anchor="end">เป้า 100%</text>`;
+  el.innerHTML = s + '</svg><div class="tip"></div>';
+  el.querySelectorAll('.hit').forEach((h) => { h.addEventListener('pointermove', (ev) => { const r = rows[+h.dataset.i]; tipOn(el, ev, `${r.area}: RR ${n0(r.rr)} / เป้า ${n0(r.target)} = ${r.achieve}%`); }); h.addEventListener('pointerleave', () => tipOff(el)); });
+})();
+
+function sortable(table, cols, rows, foot, state, rowFn) {
+  function draw() {
+    const S = state, val = (r) => r[S.key] == null ? -Infinity : r[S.key];
+    const list = [...rows].sort((a, b) => (typeof val(a) === 'string' ? S.dir * String(val(a)).localeCompare(String(val(b))) : S.dir * (val(a) - val(b))) || (a.order || 0) - (b.order || 0));
+    const head = '<thead><tr>' + cols.map((c) => `<th class="${c.cls || ''}">${c.sort ? `<button class="sort" data-k="${c.key}">${c.label}<i>${S.key === c.key ? (S.dir < 0 ? '▼' : '▲') : ''}</i></button>` : c.label}</th>`).join('') + '</tr></thead>';
+    table.innerHTML = head + '<tbody>' + list.map(rowFn).join('') + '</tbody><tfoot>' + foot + '</tfoot>';
+    table.querySelectorAll('.sort').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.k; if (S.key === k) S.dir = -S.dir; else { S.key = k; S.dir = (k === 'area' || k === 'name') ? 1 : -1; } draw(); }));
+  }
+  draw();
+}
+const dayCls = (d) => 'day' + (d % 2 === 0 ? ' alt' : '') + (d === 21 ? ' sep' : '');
+const dayCols = DAYS.map((d) => ({ label: d, cls: dayCls(d) }));
+const td = (v, cls = '') => `<td class="${cls}">${v}</td>`;
+sortable(document.getElementById('t-area'),
+  [{ key: 'area', label: 'เขต', cls: 'l', sort: 1 }, ...dayCols, { key: 'before21', label: 'ก่อน 21', cls: 'sep', sort: 1 }, { key: 'mtd', label: 'MTD', sort: 1 }, { key: 'rr', label: 'RR', sort: 1 }, { key: 'target', label: 'เป้า', sort: 1 }, { key: 'gap', label: 'Gap', sort: 1 }, { key: 'achieve', label: '%ACH', sort: 1 }, { key: 'stock', label: 'สต็อก', cls: 'sep', sort: 1 }],
+  areas,
+  '<tr>' + td('รวม', 'l') + DAYS.map((d, i) => td(n0(byDay[i].units), dayCls(d) + (byDay[i].units == null ? ' mut' : ''))).join('') + td(n0(T.before21), 'sep') + td(n0(T.mtd)) + td(n0(T.rr)) + td(n0(T.target)) + td(n0(T.gap)) + td(T.achieve + '%', band(T.achieve)) + td(n0(T.stock), 'sep') + '</tr>',
+  { key: 'achieve', dir: -1 },
+  (r) => '<tr>' + td(esc(r.area), 'l') + DAYS.map((d, i) => td(n0(r.days[i]), dayCls(d) + (r.days[i] == null ? ' mut' : ''))).join('') + td(n0(r.before21), 'sep') + td(n0(r.mtd)) + td(n0(r.rr)) + td(n0(r.target)) + td(n0(r.gap)) + td(r.achieve + '%', band(r.achieve)) + td(n0(r.stock), 'sep') + '</tr>');
+
+// Focus North
+const north = { upc_un: { label: 'เหนือบน', a: areas.find((a) => a.code === 'upc_un') }, upc_ln: { label: 'เหนือล่าง', a: areas.find((a) => a.code === 'upc_ln') } };
+const shopRows = (code) => DATA.shops.filter((s) => s.area === code).map((s) => {
+  const total = s.days.reduce((x, v) => x + v, 0), dw = s.days.length;
+  return { ...s, total, mtd: s.before21 + total, ach: dw ? Math.round(total / (s.target_day * dw) * 100) : null };
+});
+const NU = north.upc_un.a, NL = north.upc_ln.a;
+const avg = (a) => Math.round(a.campaign / a.days.length);
+document.getElementById('n-lead').innerHTML = `เหนือล่าง % Achieve <b class="${band(NL.achieve)}">${NL.achieve}%</b> เทียบเหนือบน <b class="${band(NU.achieve)}">${NU.achieve}%</b> เหนือบนต้องขายเฉลี่ยวันละ <b>${n0(NU.need)}</b> ชิ้นจึงจะปิดเป้า ขณะที่ตั้งแต่ 21 พ.ย. ขายได้เฉลี่ยวันละ <b>${avg(NU)}</b> ชิ้น ส่วนเหนือล่างต้องการวันละ <b>${n0(NL.need)}</b> ชิ้น (ทำได้เฉลี่ย <b>${avg(NL)}</b> ชิ้น)`;
+document.getElementById('n-board').innerHTML = ['upc_un', 'upc_ln'].map((c) => {
+  const a = north[c].a, mp = Math.round(a.mtd / a.target * 100), cover = Math.round(a.stock / (a.mtd / lastDay)), shops = DATA.shops.filter((s) => s.area === c).length;
+  const items = [['MTD', n0(a.mtd)], ['คาดการณ์ (RR)', n0(a.rr)], ['เป้า พ.ย.', n0(a.target)], ['Gap ถึงเป้า', n0(a.gap)], ['ต้องขาย/วัน', n0(a.need)], ['เฉลี่ย/วัน ตั้งแต่ 21 พ.ย.', avg(a)], ['สต็อกคงเหลือ', n0(a.stock)], ['สต็อกพอขาย (วัน)', n0(cover)], ['สัดส่วน MTD ทั้งประเทศ', (Math.round(a.mtd / T.mtd * 1000) / 10) + '%'], ['จำนวนสาขา', shops]];
+  return `<div class="card"><div><b style="font-size:17px">${north[c].label}</b> <span class="mut">${esc(a.area)}</span></div><div class="big"><span class="${band(a.achieve)}">${a.achieve}%</span> <span class="k-label">% Achieve</span></div><div class="track"><div class="fill" style="width:${Math.min(100, mp)}%"></div><div class="rr" style="left:${Math.min(100, a.achieve)}%"></div></div><div class="cap"><span>ขายแล้ว ${mp}% ของเป้า</span><span>ขีดดำ = คาดการณ์ RR ${a.achieve}%</span></div><dl>${items.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></div>`;
+}).join('');
+
+['upc_un', 'upc_ln'].forEach((c) => {
+  const card = document.getElementById(c === 'upc_un' ? 'shops-un' : 'shops-ln');
+  const title = (c === 'upc_un' ? 'Upper North' : 'Lower North') + ' · ยอดขาย Suplife Power Bank รายวันรายสาขา';
+  const rows = shopRows(c), a = north[c].a;
+  card.innerHTML = `<div class="exp" data-t="t-${c}" data-f="suplife_${c === 'upc_un' ? 'upper' : 'lower'}_north_shops"><button class="ebtn" data-k="png">Download PNG</button><button class="ebtn" data-k="csv">Export CSV</button></div><h2>${title}</h2><p class="note">${north[c].label} · ${rows.length} สาขา · ยอดขาย (ชิ้น) 1–20 พ.ย. และรายวัน 21–30 พ.ย. · ตัวเลขสีเขียว = ถึง Target/วัน, สีแดง = ต่ำกว่า · %ACH = รวม 21–30 ÷ (Target/วัน × จำนวนวันที่มีข้อมูล)</p><div class="tw"><table id="t-${c}"></table></div>`;
+  const tot = { target_day: sum(rows, 'target_day'), before21: sum(rows, 'before21'), total: sum(rows, 'total'), mtd: sum(rows, 'mtd') };
+  const dw = rows[0] ? rows[0].days.length : 0; tot.ach = Math.round(tot.total / (tot.target_day * dw) * 100);
+  const dsum = (i) => i < dw ? rows.reduce((x, r) => x + r.days[i], 0) : null;
+  const foot = '<tr>' + `<td class="l" colspan="2">รวมทุกสาขา</td>` + td(n0(tot.target_day)) + td(n0(tot.before21), 'sep') + DAYS.map((d, i) => td(n0(dsum(i)), dayCls(d) + (dsum(i) == null ? ' mut' : ''))).join('') + td(n0(tot.total), 'sep') + td(tot.ach + '%', band(tot.ach)) + td(n0(tot.mtd)) + '</tr>'
+    + '<tr>' + `<td class="l mut" colspan="2">ยอดเขตจากรายงาน (เทียบ)</td>` + td('') + td(n0(a.before21), 'sep mut') + DAYS.map((d, i) => td(n0(a.days[i]), dayCls(d) + ' mut')).join('') + td(n0(a.campaign), 'sep mut') + td('') + td(n0(a.mtd), 'mut') + '</tr>';
+  sortable(document.getElementById('t-' + c),
+    [{ label: 'Shop Code', cls: 'l' }, { key: 'name', label: 'ชื่อสาขา', cls: 'l', sort: 1 }, { key: 'target_day', label: 'Target/วัน', sort: 1 }, { key: 'before21', label: '1–20', cls: 'sep', sort: 1 }, ...dayCols, { key: 'total', label: 'รวม 21–30', cls: 'sep', sort: 1 }, { key: 'ach', label: '%ACH', sort: 1 }, { key: 'mtd', label: 'MTD', sort: 1 }],
+    rows, foot, { key: 'ach', dir: -1 },
+    (r) => '<tr>' + td(r.code, 'l mut') + td(esc(r.name), 'l') + td(n0(r.target_day)) + td(n0(r.before21), 'sep') + DAYS.map((d, i) => { const v = r.days[i]; return td(n0(v), dayCls(d) + (v == null ? ' mut' : v >= r.target_day ? ' ok' : ' bad')); }).join('') + td(n0(r.total), 'sep') + td(r.ach == null ? '–' : r.ach + '%', r.ach == null ? 'mut' : band(r.ach)) + td(n0(r.mtd)) + '</tr>');
+});
+bars(document.getElementById('c-north'), [{ name: 'เหนือบน', color: 'var(--blue)', values: DAYS.map((d, i) => NU.days[i] ?? null) }, { name: 'เหนือล่าง', color: 'var(--orange)', values: DAYS.map((d, i) => NL.days[i] ?? null) }], { label: 'ยอดขายรายวัน เหนือบน vs เหนือล่าง', W: 1300, H: 300 });
+
+// Tabs
+function openTab(id) { document.querySelectorAll('.panel').forEach((p) => { p.hidden = p.id !== id; }); document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('on', b.dataset.tab === id)); }
+document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => { openTab(b.dataset.tab); history.replaceState(null, '', '#' + b.dataset.tab); }));
+if (location.hash === '#north') openTab('north');
+
+// Export
+const stamp = () => { const d = new Date(); return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0'); };
+const clean = (s) => s.replace(/[▲▼]/g, '').replace(/\s+/g, ' ').trim();
+function grid(t) { const rows = []; t.querySelectorAll('tr').forEach((tr) => { const cells = []; tr.querySelectorAll('th,td').forEach((c) => { const cls = c.className || ''; cells.push({ text: clean(c.textContent), span: c.colSpan || 1, head: c.tagName === 'TH', foot: !!tr.closest('tfoot'), left: /(^|\s)l(\s|$)/.test(cls), day: /(^|\s)day(\s|$)/.test(cls), alt: /(^|\s)alt(\s|$)/.test(cls), color: /(^|\s)ok/.test(cls) ? '#1a7f37' : /(^|\s)warn/.test(cls) ? '#b26b00' : /(^|\s)bad/.test(cls) ? '#c62828' : /mut/.test(cls) ? '#777777' : '#111111' }); }); if (cells.length) rows.push(cells); }); return rows; }
+function save(name, blob) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
+function toCsv(rows) { const q = (s) => /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; return '﻿' + rows.map((r) => { const o = []; for (const c of r) { o.push(q(c.text)); for (let i = 1; i < c.span; i++) o.push(''); } return o.join(','); }).join('\r\n'); }
+function toPng(rows, title) {
+  const font = '13px sans-serif', bold = '600 13px sans-serif', padX = 10, rowH = 28, sc = 2, mc = document.createElement('canvas').getContext('2d');
+  const ncol = Math.max(...rows.map((r) => r.reduce((s, c) => s + c.span, 0))), w = new Array(ncol).fill(24);
+  for (const r of rows) { let i = 0; for (const c of r) { mc.font = c.head || c.foot ? bold : font; if (c.span === 1) w[i] = Math.max(w[i], Math.ceil(mc.measureText(c.text).width) + padX * 2); i += c.span; } }
+  const tw = w.reduce((a, b) => a + b, 0), top = 56, W = tw + 32, H = top + rows.length * rowH + 20, cv = document.createElement('canvas'); cv.width = W * sc; cv.height = H * sc;
+  const g = cv.getContext('2d'); g.scale(sc, sc); g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); g.textBaseline = 'middle';
+  g.fillStyle = '#2f68ad'; g.font = '600 16px sans-serif'; g.fillText(title, 16, 20); g.fillStyle = '#777'; g.font = '12px sans-serif'; g.fillText('Suplife Power Bank · ' + document.getElementById('asof').textContent, 16, 40);
+  rows.forEach((r, ri) => { const y = top + ri * rowH, isH = r.every((c) => c.head), isF = r.some((c) => c.foot); if (isH || isF) { g.fillStyle = isH ? '#e3edf8' : '#f1f6fc'; g.fillRect(16, y, tw, rowH); } let x = 16, i = 0; for (const c of r) { let cw = 0; for (let k = 0; k < c.span; k++) cw += w[i + k]; if (c.day) { g.fillStyle = c.alt ? 'rgba(242,153,74,0.20)' : 'rgba(242,153,74,0.10)'; g.fillRect(x, y, cw, rowH); } g.font = c.head || isF ? bold : font; g.fillStyle = c.head ? '#444' : c.color; g.textAlign = c.left ? 'left' : 'right'; g.fillText(c.text, c.left ? x + padX : x + cw - padX, y + rowH / 2); x += cw; i += c.span; } g.strokeStyle = '#dde1e6'; g.beginPath(); g.moveTo(16, y + rowH + .5); g.lineTo(16 + tw, y + rowH + .5); g.stroke(); });
+  return new Promise((res) => cv.toBlob(res, 'image/png'));
+}
+document.addEventListener('click', async (ev) => {
+  const b = ev.target.closest('.ebtn'); if (!b) return;
+  const box = b.closest('.exp'), t = document.getElementById(box.dataset.t), card = box.closest('.card'), rows = grid(t), title = clean(card.querySelector('h2').textContent), base = box.dataset.f + '_' + stamp();
+  if (b.dataset.k === 'png') save(base + '.png', await toPng(rows, title)); else save(base + '.csv', new Blob([toCsv(rows)], { type: 'text/csv;charset=utf-8' }));
+});
+</script>
+</body>
+</html>
