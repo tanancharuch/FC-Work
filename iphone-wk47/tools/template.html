@@ -435,7 +435,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
       rows.forEach(function(r){ ['d18','dn','dt','c18','cn','ct'].forEach(function(f){ tot[f]+=r[f]; }); });
       list.forEach(function(r){ tot.t18+=r.t18||0; tot.tn+=r.tn||0; tot.tt+=r.tt||0; });
       var sec=el('div','sec nb'), hd=el('div','sec-h'), hx=el('div');
-      hx.appendChild(el('h2',null,'กระดาน'+bd.name+' · '+bd.area)); hx.appendChild(el('p',null,bd.shops.length+' สาขาที่มี Target'+(ex.length?' · อีก '+ex.length+' สาขาใน Area ที่มียอดแต่ไม่มี Target':'')));
+      hx.appendChild(el('h2',null,'ติดตามยอด iPhone '+bd.area.replace('UPC - ',''))); hx.appendChild(el('p',null,bd.shops.length+' สาขาที่มี Target'+(ex.length?' · อีก '+ex.length+' สาขาใน Area ที่มียอดแต่ไม่มี Target':'')));
       hd.appendChild(hx); var pngBtn=el('button','btn','Download PNG'); pngBtn.onclick=function(){ northPNG(bd, GS, k, rows, tot); }; hd.appendChild(pngBtn); sec.appendChild(hd);
       // summary cards: one per group, today + cumulative
       var sm=el('div','nsum');
@@ -472,7 +472,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     var cv=document.createElement('canvas'); cv.width=W*sc; cv.height=H*sc; var x=cv.getContext('2d'); x.scale(sc,sc);
     var F='"IBM Plex Sans Thai","Sarabun","Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif';
     x.fillStyle='#fff'; x.fillRect(0,0,W,H);
-    x.fillStyle='#1b1a18'; x.font='700 24px '+F; x.fillText('กระดาน'+bd.name+' · '+bd.area+(GS.length===1?' · '+GS[0][1]:''), pad, 42);
+    x.fillStyle='#1b1a18'; x.font='700 24px '+F; x.fillText('ติดตามยอด iPhone '+bd.area.replace('UPC - ','')+(GS.length===1?' · '+GS[0][1]:''), pad, 42);
     x.fillStyle='#6f6b64'; x.font='14px '+F; x.fillText('ยอดขายถึง '+D.updated+' · วันที่ '+thDate(S.nd)+' · TG วัน เทียบยอดขายของวันนั้น · หน่วย: เครื่อง', pad, 68);
     var cw=(W-pad*2-(GS.length-1)*12)/GS.length;
     GS.forEach(function(G,i){ var bx=pad+i*(cw+12), by=84; x.strokeStyle='#e6e3dc'; x.lineWidth=1; x.strokeRect(bx,by,cw,cardH);
