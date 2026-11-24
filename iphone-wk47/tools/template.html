@@ -92,6 +92,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
 .ngrp h3{font-size:15px;margin:0}
 .nsum{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .foot{color:var(--muted);font-size:12px;margin-top:16px;line-height:1.6}
+#t-area thead tr:nth-child(2) th{text-align:right}
 </style>
 </head>
 <body>
@@ -242,10 +243,10 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     var h=el('div','m-h',title); h.appendChild(el('span',null,pct(totalQ?a.q/totalQ:0)+' ของเครื่องที่ขาย · '+desc)); c.appendChild(h);
     var tt=tgt(null,key), ac=ach(actual(sum(groupRows.filter(function(r){ return tgt(SH[r.s].a,key)!=null; }))),tt);
     var nn=el('div','m-n');
-    [[fmtT(tt), S.tm==='n'?'Target Rev (฿)':'Target Qty'],[S.tm==='n'?fmt(a.n):fmt(a.q), S.tm==='n'?'ยอด Rev (฿)':'ยอด Qty'],[pct(ac),'%ACH'],[S.tm==='n'?fmt(a.q):fmt(a.n), S.tm==='n'?'ยอด Qty':'ยอด Rev (฿)']]
+    [[S.tm==='n'?fmt(a.n):fmt(a.q), S.tm==='n'?'ยอด Rev (฿)':'ยอด Qty'],[S.tm==='n'?fmt(a.q):fmt(a.n), S.tm==='n'?'ยอด Qty':'ยอด Rev (฿)']].concat(tt!=null?[[fmtT(tt),'Target'],[pct(ac),'%ACH']]:[])
       .forEach(function(x){ var d=el('div'); d.appendChild(el('b',x[1]==='%ACH'?achCls(ac):null,x[0])); d.appendChild(el('small',null,x[1])); nn.appendChild(d); });
     c.appendChild(nn);
-    var tr=el('div','track'), i=el('i'); i.style.width=Math.min(100,(ac||0)*100)+'%'; tr.appendChild(i); c.appendChild(tr);
+    if(tt!=null){ var tr=el('div','track'), i=el('i'); i.style.width=Math.min(100,(ac||0)*100)+'%'; tr.appendChild(i); c.appendChild(tr); }
     var bm=agg(groupRows,function(r){ return r.m; });
     Object.keys(bm).sort(function(x,y){ return bm[y].q-bm[x].q; }).forEach(function(m){ var line=el('div','cap'); line.appendChild(el('span',null,m)); var v=el('span'); v.appendChild(el('b',null,fmt(bm[m].q)+' เครื่อง')); v.appendChild(document.createTextNode('  '+fmt(bm[m].n)+' ฿')); line.appendChild(v); c.appendChild(line); });
     return c;
@@ -298,7 +299,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
 
   var AREA_COLS=function(){
     var u=S.tm==='n'?'Rev (฿)':'Qty';
-    if(!S.model) return [['area','Area','l','s'],['t18','iPhone 18 Series · Target'],['v18','iPhone 18 Series · ยอด '+u],['a18','%ACH'],['tn','N- · Target'],['vn','N- · ยอด '+u],['an','%ACH'],['tt','รวม · Target'],['vt','รวม · ยอด '+u],['at','%ACH'],['sold','สาขาที่ขาย'],['all','สาขาทั้งหมด']];
+    if(!S.model) return [['area','Area','l','s'],['v18','iPhone 18 Series · ยอด '+u],['vn','N- · ยอด '+u],['tt','รวม · Target'],['vt','รวม · ยอด '+u],['at','%ACH'],['sold','สาขาที่ขาย'],['all','สาขาทั้งหมด']];
     var lab=mLabel(S.model);
     if(S.model===G18 || S.model===NM) return [['area','Area','l','s'],['tt',lab+' · Target'],['vt',lab+' · ยอด '+u],['at','%ACH'],['sold','สาขาที่ขาย'],['all','สาขาทั้งหมด']];
     return [['area','Area','l','s'],['vt',lab+' · ยอด '+u],['oth',S.tm==='n'?'ยอด Qty':'ยอด Rev (฿)'],['sold','สาขาที่ขาย'],['all','สาขาทั้งหมด']];
@@ -332,9 +333,9 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
       var u=S.tm==='n'?'Rev (฿)':'Qty', th=el('thead'), r1=el('tr'), r2=el('tr');
       var sh=function(row,key,txt,cls,rs){ var c=el('th',cls||null,txt+(S.sortA[0]===key?(S.sortA[1]<0?' ▼':' ▲'):'')); if(rs) c.rowSpan=rs; c.onclick=function(){ if(S.sortA[0]===key) S.sortA[1]=-S.sortA[1]; else S.sortA=[key, key==='area'?1:-1]; drawAreas(); }; row.appendChild(c); };
       sh(r1,'area','Area','l',2);
-      [['iPhone 18 Series','g18'],['iPhone N-',''],['รวมทั้งหมด','gT']].forEach(function(g){ var c=el('th',('grp '+g[1]).trim(),g[0]); c.colSpan=3; r1.appendChild(c); });
+      [['iPhone 18 Series','g18',1],['iPhone N-','',1],['รวมทั้งหมด','gT',3]].forEach(function(g){ var c=el('th',('grp '+g[1]).trim(),g[0]); c.colSpan=g[2]; r1.appendChild(c); });
       sh(r1,'sold','สาขาที่ขาย',null,2); sh(r1,'all','สาขาทั้งหมด',null,2);
-      [['t18','v18','a18','g18'],['tn','vn','an',''],['tt','vt','at','gT']].forEach(function(g){ sh(r2,g[0],'Target',g[3]); sh(r2,g[1],'ยอด '+u,g[3]); sh(r2,g[2],'%ACH',g[3]); });
+      sh(r2,'v18','ยอด '+u,'g18'); sh(r2,'vn','ยอด '+u,''); sh(r2,'tt','Target','gT'); sh(r2,'vt','ยอด '+u,'gT'); sh(r2,'at','%ACH','gT');
       th.appendChild(r1); th.appendChild(r2); t.replaceChildren(th);
     } else {
       t.replaceChildren(header(t,AREA_COLS(),S.sortA,drawAreas));
