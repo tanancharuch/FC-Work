@@ -1,5 +1,5 @@
 {
- "label": "WK48 Top Down (Allocate) 23–30 พ.ย. · ตอนนี้มีเฉพาะ 5 Area: UPC Central Northeast, Lower North, Lower Northeast, Upper North, Upper Northeast · Qty เท่านั้น",
+ "label": "WK48 Top Down (Allocate) 23–30 พ.ย. · Qty",
  "by_area": {
   "UPC - Central Northeast": {
    "18": {
@@ -96,5 +96,12 @@
    "17 Air": 1,
    "15": 3
   }
- }
+ },
+ "scope": [
+  "UPC - Central Northeast",
+  "UPC - Lower North",
+  "UPC - Lower Northeast",
+  "UPC - Upper North",
+  "UPC - Upper Northeast"
+ ]
 }

@@ -157,8 +157,10 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
 <script>
 (function(){
   var D = JSON.parse(document.getElementById('data').textContent);
-  var SH = D.shops, AREAS = D.areas;
-  var R = D.rows.map(function(r){ return {d:r[0],h:r[1],s:r[2],m:r[3],c:r[4],k:r[5],q:r[6],g:r[7],n:r[8]}; });
+  var SCOPE = (D.targets && D.targets.scope) || null;
+  var AREAS = SCOPE ? D.areas.filter(function(a){ return SCOPE.indexOf(a.area)>=0; }) : D.areas;
+  var SH = {}; Object.keys(D.shops).forEach(function(c){ if(!SCOPE || SCOPE.indexOf(D.shops[c].a)>=0) SH[c]=D.shops[c]; });
+  var R = D.rows.filter(function(r){ return SH[r[2]]; }).map(function(r){ return {d:r[0],h:r[1],s:r[2],m:r[3],c:r[4],k:r[5],q:r[6],g:r[7],n:r[8]}; });
   var COLOR = {BL:['Blue','#3b6fb6'],RD:['Red','#c0392b'],BK:['Black','#222'],SV:['Silver','#c9c9c9'],WH:['White','#f7f7f7'],OR:['Orange','#e67e22'],LV:['Lavender','#b9a7dd'],PK:['Pink','#f2a7c3'],GD:['Gold','#d4b26a'],GN:['Green','#5c8f5a']};
   var cname = function(k){ return COLOR[k] ? COLOR[k][0] : k; };
   var TH_DOW = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
@@ -172,7 +174,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   var dow = function(s){ return dObj(s).getUTCDay(); };
   var el = function(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; };
 
-  $('sub').textContent = 'ยอดขายถึง '+D.updated+' · ข้อมูลจาก TSM (สาขา WW)';
+  $('sub').textContent = 'ยอดขายถึง '+D.updated+' · ข้อมูลจาก TSM (สาขา WW)'+(D.targets&&D.targets.scope?' · แสดงเฉพาะ '+D.targets.scope.length+' Area ที่มี Target WK48':'');
 
   var WEEK0 = '2026-11-16', FRI = '2026-11-20', SUN = '2026-11-22';
   var S = {tm:'q', from: (D.targets&&D.targets.from)||FRI, to: (D.targets&&D.targets.to&&D.targets.to<D.last)?D.targets.to:D.last, area:'', type:'', model:'', q:'', sortA:['vt',-1], sortS:['q',-1]};
