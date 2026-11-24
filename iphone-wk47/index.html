@@ -118,7 +118,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   <div class="models" id="models"></div>
 
   <div class="sec" id="sec-area">
-    <div class="sec-h"><div><h2 id="area-h">ราย Area · เทียบ Target</h2><p id="area-p">Target · ยอดขาย · %ACH แยก iPhone 18 Series และ iPhone N-</p></div><div class="row" style="margin:0"><div class="seg tmode2"><button data-m="q">Qty</button><button data-m="n">Rev</button></div><button class="btn" id="png-area">Download PNG</button><button class="btn" id="csv-area">Export CSV</button></div></div>
+    <div class="sec-h"><div><h2 id="area-h">ติดตามยอด iPhone Area</h2><p id="area-p">Target · ยอดขาย · %ACH แยก iPhone 18 Series และ iPhone N-</p></div><div class="row" style="margin:0"><div class="seg tmode2"><button data-m="q">Qty</button><button data-m="n">Rev</button></div><button class="btn" id="png-area">Download PNG</button><button class="btn" id="csv-area">Export CSV</button></div></div>
     <div class="tw"><table id="t-area"></table></div>
   </div>
 
@@ -326,7 +326,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   function drawAreas(){
     var lab = S.model ? mLabel(S.model) : 'ยอดรวมทุกรุ่น';
     var hasT = !S.model || S.model===G18 || S.model===NM || tgt(null,S.model)!=null;
-    $('area-h').textContent='ราย Area · เทียบ Target '+TP();
+    $('area-h').textContent='ติดตามยอด iPhone Area';
     $('area-p').textContent = (S.tm==='n'?'Rev (฿) · ':'Qty (เครื่อง) · ')+'ยอดขายวันที่ '+SR()+' · '+(hasT?'เทียบ Target ':'ไม่มี Target รายรุ่นนี้ · ')+lab+(S.type?' · ไม่มี Target แยกตามประเภทสาขา':'');
     if(!AREA_COLS().some(function(c){ return c[0]===S.sortA[0]; })) S.sortA=['vt',-1];
     var t=$('t-area'), list=sortRows(areaData(), S.sortA);
@@ -535,7 +535,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     var a=document.createElement('a'); a.download=fname; a.href=cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
   }
   var scopeTxt=function(){ return [S.area||'ทุกพื้นที่', S.type||'ทุกประเภทสาขา', S.model?mLabel(S.model):'ทุกรุ่น'].join(' · '); };
-  $('png-area').onclick=function(){ tablePNG('ราย Area · เทียบ Target '+TP()+' ('+(S.tm==='n'?'Rev':'Qty')+')', scopeTxt()+' · ยอดขาย '+SR()+' · Target '+TP(), $('t-area'), 'iphone_area_'+(S.tm==='n'?'rev':'qty')+'_'+(D.last||'')+'.png'); };
+  $('png-area').onclick=function(){ tablePNG('ติดตามยอด iPhone Area ('+(S.tm==='n'?'Rev':'Qty')+')', scopeTxt()+' · ยอดขาย '+SR()+' · Target '+TP(), $('t-area'), 'iphone_area_'+(S.tm==='n'?'rev':'qty')+'_'+(D.last||'')+'.png'); };
   $('png-shop').onclick=function(){ tablePNG('รายสาขา', scopeTxt()+' · '+(S.from===S.to?thDate(S.from):thDate(S.from)+' – '+thDate(S.to))+(S.q?' · ค้นหา "'+S.q+'"':''), $('t-shop'), 'iphone_shop_'+S.from+'_'+S.to+'.png'); };
 
   function showTab(tb){
