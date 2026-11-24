@@ -183,7 +183,7 @@ sortable(document.getElementById('t-area'),
 const north = { upc_un: { label: 'เหนือบน', a: areas.find((a) => a.code === 'upc_un') }, upc_ln: { label: 'เหนือล่าง', a: areas.find((a) => a.code === 'upc_ln') } };
 const shopRows = (code) => DATA.shops.filter((s) => s.area === code).map((s) => {
   const total = s.days.reduce((x, v) => x + v, 0), dw = s.days.length;
-  return { ...s, total, mtd: s.before21 + total, ach: dw ? Math.round(total / (s.target_day * dw) * 100) : null };
+  return { ...s, total, mtd: s.before21 + total, today: dw ? s.days[dw - 1] : null, ach: dw && s.target_day ? Math.round(s.days[dw - 1] / s.target_day * 100) : null };
 });
 const NU = north.upc_un.a, NL = north.upc_ln.a;
 const avg = (a) => Math.round(a.campaign / a.days.length);
@@ -198,16 +198,16 @@ document.getElementById('n-board').innerHTML = ['upc_un', 'upc_ln'].map((c) => {
   const card = document.getElementById(c === 'upc_un' ? 'shops-un' : 'shops-ln');
   const title = (c === 'upc_un' ? 'Upper North' : 'Lower North') + ' · ยอดขาย Suplife Power Bank รายวันรายสาขา';
   const rows = shopRows(c), a = north[c].a;
-  card.innerHTML = `<div class="exp" data-t="t-${c}" data-f="suplife_${c === 'upc_un' ? 'upper' : 'lower'}_north_shops"><button class="ebtn" data-k="png">Download PNG</button><button class="ebtn" data-k="csv">Export CSV</button></div><h2>${title}</h2><p class="note">${north[c].label} · ${rows.length} สาขา · ยอดขาย (ชิ้น) 1–20 พ.ย. และรายวัน 21–30 พ.ย. · ตัวเลขสีเขียว = ถึง Target/วัน, สีแดง = ต่ำกว่า · %ACH = รวม 21–30 ÷ (Target/วัน × จำนวนวันที่มีข้อมูล)</p><div class="tw"><table id="t-${c}"></table></div>`;
+  card.innerHTML = `<div class="exp" data-t="t-${c}" data-f="suplife_${c === 'upc_un' ? 'upper' : 'lower'}_north_shops"><button class="ebtn" data-k="png">Download PNG</button><button class="ebtn" data-k="csv">Export CSV</button></div><h2>${title}</h2><p class="note">${north[c].label} · ${rows.length} สาขา · ยอดขาย (ชิ้น) 1–20 พ.ย. และรายวัน 21–30 พ.ย. · ตัวเลขสีเขียว = ถึง Target/วัน, สีแดง = ต่ำกว่า · %ACH = ยอดวันปัจจุบัน ÷ Target/วัน</p><div class="tw"><table id="t-${c}"></table></div>`;
   const tot = { target_day: sum(rows, 'target_day'), before21: sum(rows, 'before21'), total: sum(rows, 'total'), mtd: sum(rows, 'mtd') };
-  const dw = rows[0] ? rows[0].days.length : 0; tot.ach = Math.round(tot.total / (tot.target_day * dw) * 100);
+  const dw = rows[0] ? rows[0].days.length : 0; tot.ach = dw ? Math.round(rows.reduce((x, r) => x + r.days[dw - 1], 0) / tot.target_day * 100) : null;
   const dsum = (i) => i < dw ? rows.reduce((x, r) => x + r.days[i], 0) : null;
-  const foot = '<tr>' + `<td class="l" colspan="2">รวมทุกสาขา</td>` + td(n0(tot.target_day)) + td(n0(tot.before21), 'sep') + DAYS.map((d, i) => td(n0(dsum(i)), dayCls(d) + (dsum(i) == null ? ' mut' : ''))).join('') + td(n0(tot.total), 'sep') + td(tot.ach + '%', band(tot.ach)) + td(n0(tot.mtd)) + '</tr>'
-    + '<tr>' + `<td class="l mut" colspan="2">ยอดเขตจากรายงาน (เทียบ)</td>` + td('') + td(n0(a.before21), 'sep mut') + DAYS.map((d, i) => td(n0(a.days[i]), dayCls(d) + ' mut')).join('') + td(n0(a.campaign), 'sep mut') + td('') + td(n0(a.mtd), 'mut') + '</tr>';
+  const foot = '<tr>' + `<td class="l" colspan="2">รวมทุกสาขา</td>` + td(n0(tot.target_day)) + td(n0(tot.before21), 'sep') + DAYS.map((d, i) => td(n0(dsum(i)), dayCls(d) + (dsum(i) == null ? ' mut' : ''))).join('') + td(tot.ach == null ? '–' : tot.ach + '%', 'sep ' + band(tot.ach)) + td(n0(tot.mtd)) + '</tr>'
+    + '<tr>' + `<td class="l mut" colspan="2">ยอดเขตจากรายงาน (เทียบ)</td>` + td('') + td(n0(a.before21), 'sep mut') + DAYS.map((d, i) => td(n0(a.days[i]), dayCls(d) + ' mut')).join('') + td('', 'sep') + td(n0(a.mtd), 'mut') + '</tr>';
   sortable(document.getElementById('t-' + c),
-    [{ label: 'Shop Code', cls: 'l' }, { key: 'name', label: 'ชื่อสาขา', cls: 'l', sort: 1 }, { key: 'target_day', label: 'Target/วัน', sort: 1 }, { key: 'before21', label: '1–20', cls: 'sep', sort: 1 }, ...dayCols, { key: 'total', label: 'รวม 21–30', cls: 'sep', sort: 1 }, { key: 'ach', label: '%ACH', sort: 1 }, { key: 'mtd', label: 'MTD', sort: 1 }],
+    [{ label: 'Shop Code', cls: 'l' }, { key: 'name', label: 'ชื่อสาขา', cls: 'l', sort: 1 }, { key: 'target_day', label: 'Target/วัน', sort: 1 }, { key: 'before21', label: '1–20', cls: 'sep', sort: 1 }, ...dayCols, { key: 'ach', label: '%ACH ' + (dw ? DAYS[dw - 1] : ''), cls: 'sep', sort: 1 }, { key: 'mtd', label: 'MTD', sort: 1 }],
     rows, foot, { key: 'ach', dir: -1 },
-    (r) => '<tr>' + td(r.code, 'l mut') + td(esc(r.name), 'l') + td(n0(r.target_day)) + td(n0(r.before21), 'sep') + DAYS.map((d, i) => { const v = r.days[i]; return td(n0(v), dayCls(d) + (v == null ? ' mut' : v >= r.target_day ? ' ok' : ' bad')); }).join('') + td(n0(r.total), 'sep') + td(r.ach == null ? '–' : r.ach + '%', r.ach == null ? 'mut' : band(r.ach)) + td(n0(r.mtd)) + '</tr>');
+    (r) => '<tr>' + td(r.code, 'l mut') + td(esc(r.name), 'l') + td(n0(r.target_day)) + td(n0(r.before21), 'sep') + DAYS.map((d, i) => { const v = r.days[i]; return td(n0(v), dayCls(d) + (v == null ? ' mut' : v >= r.target_day ? ' ok' : ' bad')); }).join('') + td(r.ach == null ? '–' : r.ach + '%', 'sep ' + (r.ach == null ? 'mut' : band(r.ach))) + td(n0(r.mtd)) + '</tr>');
 });
 bars(document.getElementById('c-north'), [{ name: 'เหนือบน', color: 'var(--blue)', values: DAYS.map((d, i) => NU.days[i] ?? null) }, { name: 'เหนือล่าง', color: 'var(--orange)', values: DAYS.map((d, i) => NL.days[i] ?? null) }], { label: 'ยอดขายรายวัน เหนือบน vs เหนือล่าง', W: 1300, H: 300 });
 
