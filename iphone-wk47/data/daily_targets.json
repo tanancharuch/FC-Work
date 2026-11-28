@@ -1,0 +1,27 @@
+{
+ "label": "Target รายวัน (ทุกรุ่น iPhone, Qty) ตามรูป \"IPHONE Daily Sales\" ที่ส่งมา",
+ "regions": [
+  "BMA",
+  "UPC II",
+  "UPC I"
+ ],
+ "days": {
+  "2026-11-28": {
+   "BMA I - North West": 109,
+   "BMA II - South West": 74,
+   "BMA III - North East": 93,
+   "BMA IV - South East": 93,
+   "BMA V - Central": 84,
+   "UPC - Central": 32,
+   "UPC - East": 63,
+   "UPC - Upper South": 46,
+   "UPC - Lower South": 20,
+   "UPC - West": 39,
+   "UPC - Lower North": 14,
+   "UPC - Lower Northeast": 35,
+   "UPC - Upper North": 39,
+   "UPC - Upper Northeast": 37,
+   "UPC - Central Northeast": 22
+  }
+ }
+}

@@ -10,6 +10,9 @@ if tp.exists():
 np = root / 'data' / 'north_targets.json'
 if np.exists():
     data['north'] = json.loads(np.read_text(encoding='utf-8'))
+dp = root / 'data' / 'daily_targets.json'
+if dp.exists():
+    data['daily'] = json.loads(dp.read_text(encoding='utf-8'))
 payload = json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
 html = (root / 'tools' / 'template.html').read_text(encoding='utf-8').replace('__DATA__', payload)
 (root / 'index.html').write_text(html, encoding='utf-8')

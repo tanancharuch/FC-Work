@@ -93,12 +93,16 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
 .nsum{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .foot{color:var(--muted);font-size:12px;margin-top:16px;line-height:1.6}
 #t-area thead tr:nth-child(2) th{text-align:right}
+#t-day tr.sub td{background:#e3edf9;font-weight:700;color:var(--fg)}
+#d-kpis{margin:10px 0}
+@media (prefers-color-scheme:dark){#t-day tr.sub td{background:rgba(58,120,212,.18)}}
+#t-day tfoot td{font-weight:700}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div><h1>ติดตามยอด iPhone ศุกร์–อาทิตย์</h1><span class="sub" id="sub"></span></div>
-  <div class="tabs" id="tabs"><button data-t="main">ภาพรวม</button><button data-t="north">โฟกัสไอโฟน North</button></div>
+  <div class="tabs" id="tabs"><button data-t="main">ภาพรวม</button><button data-t="day">Target รายวัน</button><button data-t="north">โฟกัสไอโฟน North</button></div>
 
   <div id="tab-main">
 
@@ -147,6 +151,13 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   </details>
   </div>
 
+  <div id="tab-day" hidden>
+    <div class="bar"><div class="row"><span class="lbl">วันที่</span><div class="seg" id="dday"></div></div></div>
+    <div class="kpis" id="d-kpis"></div>
+    <div class="card"><div class="hd"><div><h2 id="d-h">Target รายวัน · ยอดขายวันนี้</h2><p class="muted" id="d-p"></p></div><button class="btn" id="png-day">Download PNG</button></div>
+      <div class="tw"><table class="nt" id="t-day"></table></div></div>
+    <p class="foot" id="d-foot"></p>
+  </div>
   <div id="tab-north" hidden>
     <div class="bar"><div class="row"><span class="lbl">กลุ่มรุ่น</span><div class="seg" id="ngrp"><button data-g="A">ทั้งหมด</button><button data-g="18">iPhone 18 Series</button><button data-g="N">iPhone N-</button></div><span class="lbl">ดูถึงวันที่</span><div class="seg" id="nday"></div><span class="lbl" id="n-note"></span></div></div>
     <div id="north"></div>
@@ -503,7 +514,7 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
       [].forEach.call(tr.children, function(c){
         while(occ[ri][col]) col++;
         var cs=c.colSpan||1, rs=c.rowSpan||1, cls=c.className||'';
-        grid.push({r:ri,c:col,cs:cs,rs:rs,kind:kind,t:c.innerText.replace(/\s*\n\s*/g,'  ').replace(/[▼▲]/g,'').trim(),good:/good/.test(cls),bad:/bad/.test(cls),grp:/grp/.test(cls),l:/(^|\s)l(\s|$)/.test(cls)||col===0,g18:/g18/.test(cls),gT:/gT/.test(cls)});
+        grid.push({r:ri,c:col,cs:cs,rs:rs,kind:kind,t:c.innerText.replace(/\s*\n\s*/g,'  ').replace(/[▼▲]/g,'').trim(),good:/good/.test(cls),bad:/bad/.test(cls),sub:/(^|\s)sub(\s|$)/.test(tr.className),grp:/grp/.test(cls),l:/(^|\s)l(\s|$)/.test(cls)||col===0,g18:/g18/.test(cls),gT:/gT/.test(cls)});
         for(var a=0;a<rs;a++){ occ[ri+a]=occ[ri+a]||[]; for(var b=0;b<cs;b++) occ[ri+a][col+b]=1; }
         col+=cs;
       });
@@ -521,12 +532,13 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
     // column group backgrounds, from the last header row's classes
     grid.filter(function(g){ return g.kind!=='h' || !g.grp; }).forEach(function(g){ if(g.g18||g.gT){ x.fillStyle=g.g18?'#eef3fb':'#fbf3e8'; x.fillRect(xs[g.c],top+rowH*g.r,xs[g.c+g.cs]-xs[g.c],rowH*g.rs); } });
     grid.filter(function(g){ return g.grp; }).forEach(function(g){ if(g.g18||g.gT){ x.fillStyle=g.g18?'#eef3fb':'#fbf3e8'; x.fillRect(xs[g.c],top,xs[g.c+g.cs]-xs[g.c],rowH); } });
+    grid.forEach(function(g){ if(g.sub){ x.fillStyle='#e3edf9'; x.fillRect(xs[g.c],top+rowH*g.r,xs[g.c+g.cs]-xs[g.c],rowH); } });
     for(var r=nh;r<nr;r++){ x.strokeStyle='#efece6'; x.beginPath(); x.moveTo(pad,top+rowH*(r+1)); x.lineTo(W-pad,top+rowH*(r+1)); x.stroke(); }
     x.strokeStyle='#d8d4cc'; x.beginPath(); x.moveTo(pad,top+rowH*nh); x.lineTo(W-pad,top+rowH*nh); x.stroke();
     grid.forEach(function(g){
       var y=top+rowH*g.r+rowH*g.rs/2+5, x0=xs[g.c], x1=xs[g.c+g.cs];
       if(g.kind==='f'){ x.strokeStyle='#bdb7ad'; x.beginPath(); x.moveTo(pad,top+rowH*g.r); x.lineTo(W-pad,top+rowH*g.r); x.stroke(); }
-      x.font=(g.kind==='b'&&!g.gT?'':'700 ')+(g.kind==='h'?(g.grp?'14px ':'12px '):'15px ')+F;
+      x.font=(g.kind==='b'&&!g.gT&&!g.sub?'':'700 ')+(g.kind==='h'?(g.grp?'14px ':'12px '):'15px ')+F;
       x.fillStyle = g.kind==='h' ? (g.grp?'#1b1a18':'#6f6b64') : g.good ? '#1a7f37' : g.bad ? '#c62828' : '#1b1a18';
       if(g.grp){ x.textAlign='center'; x.fillText(g.t,(x0+x1)/2,y); }
       else if(g.l){ x.textAlign='left'; x.fillText(g.t,x0+6,y); } else { x.textAlign='right'; x.fillText(g.t,x1-6,y); }
@@ -538,15 +550,45 @@ tfoot td{font-weight:700;position:sticky;bottom:0;background:var(--panel);border
   $('png-area').onclick=function(){ tablePNG('ติดตามยอด iPhone Area ('+(S.tm==='n'?'Rev':'Qty')+')', scopeTxt()+' · ยอดขาย '+SR()+' · Target '+TP(), $('t-area'), 'iphone_area_'+(S.tm==='n'?'rev':'qty')+'_'+(D.last||'')+'.png'); };
   $('png-shop').onclick=function(){ tablePNG('รายสาขา', scopeTxt()+' · '+(S.from===S.to?thDate(S.from):thDate(S.from)+' – '+thDate(S.to))+(S.q?' · ค้นหา "'+S.q+'"':''), $('t-shop'), 'iphone_shop_'+S.from+'_'+S.to+'.png'); };
 
+  var DT = D.daily || null, dDays = DT ? Object.keys(DT.days).sort() : [];
+  if(DT){ var pick=dDays.filter(function(d){ return d<=D.last; }); S.dd = pick.length ? pick[pick.length-1] : dDays[0]; }
+  else { var tb0=document.querySelector('#tabs [data-t="day"]'); if(tb0) tb0.remove(); }
+  var REG = {}; (D.areas||[]).forEach(function(a){ REG[a.area]=a.region; });
+  function drawDay(){
+    var day=S.dd, TGd=DT.days[day]||{};
+    var dz=$('dday'); dz.replaceChildren(); dDays.forEach(function(d){ var b=el('button',d===day?'on':null,thDate(d)); b.onclick=function(){ S.dd=d; drawDay(); }; dz.appendChild(b); });
+    var V={}; AREAS.forEach(function(a){ V[a.area]={g:0,n:0}; });
+    R.forEach(function(r){ if(r.d!==day) return; var a=SH[r.s].a; if(!V[a]) return; if(TOP[r.m]) V[a].g+=r.q; else V[a].n+=r.q; });
+    var order=(DT.regions||['BMA','UPC II','UPC I']), tb=$('t-day'); tb.replaceChildren();
+    var th=el('thead'), hr=el('tr');
+    [['Area','l'],['Target',''],['iPhone 18 Series','g18'],['iPhone N-',''],['รวม','gT'],['%ACH','gT']].forEach(function(h){ hr.appendChild(el('th',h[1]||null,h[0])); }); th.appendChild(hr); tb.appendChild(th);
+    var body=el('tbody'), all={t:0,g:0,n:0};
+    var pc=function(v,t){ return t ? Math.round(v/t*100) : null; };
+    var row=function(name,t,g,n,cls){ var tr=el('tr',cls||null), tt=g+n, a=pc(tt,t);
+      [[name,'l'],[t?fmt(t):'—',''],[fmt(g),'g18'],[fmt(n),''],[fmt(tt),'gT'],[a==null?'—':a+'%','gT '+(a==null?'':a>=100?'good':a<50?'bad':'')]].forEach(function(c){ tr.appendChild(el('td',c[1].trim()||null,c[0])); }); return tr; };
+    order.forEach(function(rg){
+      var sub={t:0,g:0,n:0};
+      AREAS.filter(function(a){ return REG[a.area]===rg; }).forEach(function(a){ var t=TGd[a.area]||0, v=V[a.area]; sub.t+=t; sub.g+=v.g; sub.n+=v.n; body.appendChild(row(a.area,t,v.g,v.n)); });
+      body.appendChild(row(rg,sub.t,sub.g,sub.n,'sub')); all.t+=sub.t; all.g+=sub.g; all.n+=sub.n;
+    });
+    tb.appendChild(body); var tf=el('tfoot'); tf.appendChild(row('รวมทั้งหมด',all.t,all.g,all.n)); tb.appendChild(tf);
+    var A=pc(all.g+all.n,all.t), kz=$('d-kpis'); kz.replaceChildren();
+    [['Target '+thDate(day),fmt(all.t),'เครื่อง (Qty)'],['iPhone 18 Series',fmt(all.g),'เครื่อง'],['iPhone N-',fmt(all.n),'เครื่อง'],['รวม · %ACH',fmt(all.g+all.n)+' · '+(A==null?'—':A+'%'),day===D.last?'ยอดถึง '+D.updated:'ทั้งวัน']].forEach(function(k){ var c=el('div','card'); c.appendChild(el('div','k-l',k[0])); c.appendChild(el('div','k-v',k[1])); c.appendChild(el('div','k-s',k[2])); kz.appendChild(c); });
+    $('d-h').textContent='Target รายวัน · ยอดขาย '+thDate(day);
+    $('d-p').textContent=(day===D.last?'ยอดขายถึง '+D.updated:'ยอดขายทั้งวัน')+' · Target = ทุกรุ่น iPhone (Qty) · ทุกสาขา WW';
+    $('d-foot').textContent='ที่มา Target: '+(DT.label||'—');
+  }
+  $('png-day').onclick=function(){ tablePNG('iPhone Daily Sales · '+thDate(S.dd), (S.dd===D.last?'ยอดขายถึง '+D.updated:'ยอดขายทั้งวัน')+' · Target = ทุกรุ่น iPhone', $('t-day'), 'iphone_daily_'+S.dd+'.png'); };
   function showTab(tb){
-    S.tab = tb==='north' && NT ? 'north' : 'main';
-    [].forEach.call($('tabs').children, function(b){ b.className = b.dataset.t===S.tab ? 'on' : ''; b.onclick=function(){ showTab(b.dataset.t); try{ history.replaceState(null,'',b.dataset.t==='north'?'#north':location.pathname); }catch(e){} }; });
-    $('tab-main').hidden = S.tab!=='main'; $('tab-north').hidden = S.tab!=='north';
+    S.tab = tb==='north' && NT ? 'north' : (tb==='day' && DT ? 'day' : 'main');
+    [].forEach.call($('tabs').children, function(b){ b.className = b.dataset.t===S.tab ? 'on' : ''; b.onclick=function(){ showTab(b.dataset.t); try{ history.replaceState(null,'',b.dataset.t!=='main'?'#'+b.dataset.t:location.pathname); }catch(e){} }; });
+    $('tab-main').hidden = S.tab!=='main'; $('tab-north').hidden = S.tab!=='north'; $('tab-day').hidden = S.tab!=='day';
     if(S.tab==='north') drawNorth();
+    if(S.tab==='day') drawDay();
   }
 
   render();
-  showTab(location.hash==='#north' ? 'north' : 'main');
+  showTab(location.hash==='#north' ? 'north' : location.hash==='#day' ? 'day' : 'main');
 })();
 </script>
 </body>
